@@ -1,0 +1,96 @@
+# zustand
+
+#### 定义全局hook
+
+例程定义了一个存在两种状态的hook
+
+```ts
+import { create } from 'zustand'
+
+export enum PromptType {
+  TEXT,
+  IMAGE,
+}
+
+interface storeState {
+  promptType: PromptType
+  setPromptType: (promptType: PromptType) => void
+}
+
+const initStates = {
+  promptType: PromptType.TEXT,
+}
+
+export const usePromptStore = create<storeState>((set) => ({
+  ...initStates,
+  setPromptType: (promptType) => {
+    set(() => ({ promptType }))
+  },
+}))
+
+```
+
+
+
+#### 调用方法
+
+结合`@mui/material`的`ToggleButtonGroup`和`ToggleButton`完成按钮的选择
+
+```tsx
+import React, { CSSProperties } from 'react'
+import { ToggleButton, ToggleButtonGroup } from '@mui/material'
+import { PromptType, usePromptStore } from '@src/stores/promptStore'
+import { t } from 'i18next'
+
+const PromptTypeSelector: React.FC = ({ style }: { style?: CSSProperties }) => {
+  const { promptType, setPromptType } = usePromptStore()
+  const handlePromptChange = (event: React.MouseEvent<HTMLElement>, prompt: PromptType) => {
+    setPromptType(prompt)
+  }
+
+  return (
+    <ToggleButtonGroup
+      value={promptType}
+      exclusive
+      onChange={handlePromptChange}
+      style={{
+        ...style,
+        width: '100%',
+        height: '44px',
+        display: 'flex',
+      }}
+    >
+      <ToggleButton
+        value={PromptType.TEXT}
+        style={{
+          flex: 1,
+          textTransform: 'none',
+          fontSize: '16px',
+          lineHeight: '24px',
+          fontWeight: '600',
+        }}
+      >
+        {t('prompt:prompt_type_text')}
+      </ToggleButton>
+      <ToggleButton
+        value={PromptType.IMAGE}
+        style={{
+          flex: 1,
+          textTransform: 'none',
+          fontSize: '16px',
+          lineHeight: '24px',
+          fontWeight: '600',
+        }}
+      >
+        {t('prompt:prompt_type_image')}
+      </ToggleButton>
+    </ToggleButtonGroup>
+  )
+}
+
+export default PromptTypeSelector
+
+```
+
+
+
