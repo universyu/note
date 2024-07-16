@@ -64,3 +64,7 @@ commit使用尾插法
 ## git cherry-pick
 
 `git cherry-pick`后面接commit的哈希值可以将commit复制过来，假设现在处于main分支，使用`git cherry-pick ...`就可以把对应的commit复制过来
+
+## git tag
+
+`git tag v0 c1`为c1这个commit记录打上标记v0
