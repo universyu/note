@@ -47,7 +47,9 @@ import { t } from 'i18next'
 const PromptTypeSelector: React.FC = ({ style }: { style?: CSSProperties }) => {
   const { promptType, setPromptType } = usePromptStore()
   const handlePromptChange = (event: React.MouseEvent<HTMLElement>, prompt: PromptType) => {
-    setPromptType(prompt)
+   	  if(prompt !== null){
+      	setPromptType(prompt)
+      }
   }
 
   return (
@@ -99,6 +101,8 @@ export default PromptTypeSelector
 ### 全局函数
 
 #### 定义
+
+如果一个函数是`async`开头的，那么返回值就是`Promise<>`，如果函数没有返回值，那么在尖括号中写`void`
 
 ```ts
 //   apps/printMon/src/stores/sdStore.ts
