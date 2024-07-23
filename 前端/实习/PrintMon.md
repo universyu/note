@@ -618,6 +618,7 @@ const StepButton = styled(ToggleButton)(({ theme }) => ({
 ```
 
 `anchorEl`控制跟随对象，`anchorOrigin`控制跟随方式
+`onClose`在点击`Popover`外面的区域时会被触发
 
 ```tsx
 <Popover
