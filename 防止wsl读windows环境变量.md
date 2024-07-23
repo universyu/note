@@ -4,3 +4,5 @@
 
 `[interop]
 appendWindowsPath=false`
+
+用vim修改只读文件后，可以`:w !sudo tee %`强制保存
