@@ -634,3 +634,73 @@ const StepButton = styled(ToggleButton)(({ theme }) => ({
 </Popover>
 ```
 
+
+
+### 滑动框
+
+拓展`styled`以传入参数
+下面的`overallScale`是一个存在`store`里面的全局变量
+**Tips：必须注意WebkitAppearance这种驼峰的格式，如果不用驼峰命名法，就会报错**
+
+```tsx
+interface InputSliderProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  overallScale: number
+}
+
+
+const InputSlider = styled('input')<InputSliderProps>(({ theme, overallScale }) => ({
+  appearance: 'none',
+  width: 296,
+  height: 32,
+  borderRadius: 3,
+  background: `linear-gradient(to right, #00AE42 0%, #00AE42 ${overallScale}%, #f2f2f2 ${overallScale}%, #f2f2f2 100%)`,
+  outline: 'none',
+  cursor: 'pointer',
+  '&::-webkit-slider-thumb': {
+    WebkitAppearance: 'none',
+    width: 16,
+    height: 32,
+    border: overallScale === 0 ? '3px solid #f2f2f2' : '2px solid #00AE42',
+    background: '#fff',
+    cursor: 'pointer',
+    borderRadius: 3,
+  },
+  '&::-moz-range-thumb': {
+    width: 16,
+    height: 32,
+    border: overallScale === 0 ? '3px solid #f2f2f2' : '2px solid #00AE42',
+    background: '#fff',
+    cursor: 'pointer',
+    borderRadius: 3,
+  },
+  '&::-ms-thumb': {
+    width: 16,
+    height: 32,
+    border: overallScale === 0 ? '3px solid #f2f2f2' : '2px solid #00AE42',
+    background: '#fff',
+    cursor: 'pointer',
+    borderRadius: 3,
+  },
+}))
+
+
+<InputSlider
+        type="range"
+        min="0"
+        max="100"
+        ref={sliderRef}
+        value={String(overallScale)}
+        onChange={(e) => setOverallScale(parseFloat(e.target.value))}
+        overallScale={overallScale}
+/>
+```
+
+拖动的值大于零时，给滑块加上绿色边框，使其看起来被完全包裹在绿色的进度条中，拖动的值等于零时，边框改为灰色
+
+
+
+![5](D:\note\前端\实习\src\5.png)
+
+
+
+![6](D:\note\前端\实习\src\6.png)
