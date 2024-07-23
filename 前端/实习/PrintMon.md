@@ -1,116 +1,6 @@
 # PrintMon
 
-### 
-
-### 整体框架
-
-**整个页面**
-
-```
-<div id="root"> 来自index.html
-   div(高宽100% absolute hidden)来自Main.tsx 用于存放多个page
-      Prompt 来自Prompt.tsx  表示一个page
-```
-
-**Prompt详解**
-
-```
-div(flex 两个方向都center  100vh)
-	Paper(flex:column padding 32px 24)
-	Dialog确定删除图片的弹框
-	Dialog点击Preview后的加载画面
-	div(flex/none 两个方向都center absolute) 点击Preview出现
-	Dialog确定生成模型的弹框
-	Dialog生成模型的加载画面
-```
-
-absolute的元素不会被前面的元素挤掉，父级会把它当作第一个元素来渲染，所以把第二个div写成absolute可以让和第一个paper在同一个位置
-
-**Paper详解**
-
-```
-Paper(flex: column padding)
-	ToggleButtonGroup 
-	div(flex:1 column)
-		Paper(flex:1 relative marginTop:32px hidden)
-			(Text版的标签
-			<>
-				div(absolute top、left:0 flex两个都是center)
-					svg
-					span
-				TextField
-				div(absolute bottom、right: 4%) 显示已有字数
-					span
-			)
-			
-			(Imag版的标签
-			
-			(如果没有上传图片
-			div(flex:column 两个方向都center)
-				input(display: none)
-				svg
-				p
-				p
-			)
-			
-			(如果已经上传图片
-			div(relative )
-				img(absolute)
-				div(absolute) 删除按键
-					svg
-			)
-			
-			)
-			
-		
-		button (Preview)
-	
-```
-
-
-
-**点击Preview之后出现的div详解**
-
- ```
- div(flex/none 两个方向都center absolute)
- 	Paper(flex:column 两个方向都center relative)
- 		Typography 标题
- 		div(id="grid")
- 			ImageComponent组件
- 		div 按钮
- ```
-
-
-
-
-
-
-
-
-
-```
-src
-├── assets
-│   ├── images
-│   └── locales
-├── components
-│   ├── prompt
-│   └── myGrid.tsx
-├── pages
-│   ├── Main.tsx
-│   └── Prompt.tsx
-├── stores
-│   └── promptStore.ts
-├── Generator.tsx
-├── global.css
-├── main.tsx
-├── global.d.ts
-├── index.html
-```
-
-
-
-
+### 整体结构
 
 #### index.html
 
@@ -657,36 +547,89 @@ const TextInput: React.FC<TextInputComponentProps> = ({ style, props }) => {
 
 
 
-### tsx资源：Icon
+### mui菜单栏
 
-**Icon示例**
+#### styled
+
+基于特定的标签做多态，外层的样式是`StepButton`本身的样式，`&.Mui-selected`表示被选中时的样式，`& > span`表示组件下的直接子`span`元素的样式
 
 ```tsx
-import * as React from 'react'
+const StepButton = styled(ToggleButton)(({ theme }) => ({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: '64px',
+  height: '100px',
+  gap: '5px',
+  backgroundColor: '#F7F7F7',
+  '&.Mui-selected': {
+    backgroundColor: '#ffffff',
+  },
+  '& > span': {
+    textTransform: 'none', 
+  },
+}))
+```
 
-function RandomIcon(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      width="16"
-      height="16"
-      viewBox="0 0 16 16"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      {...props}
-    >
-      <path
-        d="M12.4366 3.58058C12.8784 4.02236 13.247 4.52089 13.5354 5.06221C13.7449 5.45539 13.4874 5.92552 13.0608 5.97654L12.9838 5.98109H10.6614C10.3163 5.98109 10.0364 5.70127 10.0364 5.35609C10.0364 5.20889 10.0873 5.07358 10.1725 4.96678L10.2271 4.90659L11.0834 4.0499C9.12192 2.52332 6.2846 2.66151 4.48164 4.46447C3.70925 5.23686 3.24239 6.19908 3.08106 7.20096L3.07211 7.26123L3.0557 7.40068C3.02116 7.7412 2.73445 8.00031 2.39217 8.00031C2.06502 8.00031 1.7998 7.7351 1.7998 7.40795L1.80209 7.35617L1.81447 7.23249C1.81664 7.21354 1.81887 7.19542 1.82115 7.17814C1.99472 5.86247 2.58687 4.59146 3.59775 3.58058C6.03853 1.13981 9.99581 1.13981 12.4366 3.58058Z"
-        fill="#00AE42"
-      />
-      <path
-        d="M3.56514 12.4197C3.12336 11.978 2.75476 11.4794 2.46636 10.9381C2.25688 10.5449 2.51434 10.0748 2.94097 10.0238L3.01795 10.0192H5.34028C5.68546 10.0192 5.96528 10.299 5.96528 10.6442C5.96528 10.7914 5.91439 10.9267 5.82925 11.0335L5.77466 11.0937L4.91829 11.9504C6.87981 13.477 9.71713 13.3388 11.5201 11.5358C12.2958 10.7601 12.7634 9.79294 12.9227 8.78641L12.9413 8.64689C12.9441 8.62111 12.9469 8.59407 12.9496 8.56577C12.9802 8.24499 13.2496 8 13.5718 8H13.6096C13.9366 8 14.2017 8.26513 14.2017 8.59218L14.1995 8.64375L14.1792 8.83274C14.0038 10.1446 13.4121 11.4116 12.404 12.4197C9.9632 14.8605 6.00592 14.8605 3.56514 12.4197Z"
-        fill="#00AE42"
-      />
-    </svg>
-  )
-}
 
-export const Random = React.memo(RandomIcon)
 
+#### ToggleButtonGroup
+
+`exclusive`表示只能有一个按钮被选中，`value`是选择不同的按钮所代表的变量，每次选择按钮就会触发`onChange`
+
+```tsx
+<ToggleButtonGroup orientation="vertical" exclusive value={step} onChange={onStepChange}>
+        <StepButton value={EditorStep.EYES} key="one">
+          <StepEyes /> //这是一个Icon
+          <span>Eyes</span>
+        </StepButton>
+        <StepButton value={EditorStep.COLOR} key="two">
+          <StepColor /> //这是一个Icon
+          <span>Color</span>
+        </StepButton>
+        <StepButton value={EditorStep.BASE} key="three">
+          <StepBase /> //这是一个Icon
+          <span>Base</span>
+        </StepButton>
+</ToggleButtonGroup>
+```
+
+
+
+### mui实现跟随式浮框
+
+#### Popover
+
+只要`addAnchorEl`改变，`addPopoveOpen`就会自动跟着改变
+
+```tsx
+  const [addAnchorEl, setAddAnchorEl] = useState<SVGSVGElement | null>(null)
+  const addPopoverOpen = Boolean(addAnchorEl)
+```
+
+利用`ref`设置跟随标签
+
+```tsx
+<AddColor
+    ref={addBtnRef}
+    onClick={() => setAddAnchorEl(addBtnRef.current)}
+/>
+```
+
+`anchorEl`控制跟随对象，`anchorOrigin`控制跟随方式
+
+```tsx
+<Popover
+  open={addPopoverOpen}
+  anchorEl={addAnchorEl}
+  onClose={() => setAddAnchorEl(null)}
+  anchorOrigin={{
+  vertical: 'bottom',
+  horizontal: 'left',
+  }}
+>
+ ...
+</Popover>
 ```
 
