@@ -4,28 +4,25 @@
 
 对`state`的设置是异步的，不能及时获取
 
-如果需要确保随机的两次是完全不同的，需要开一个临时变量存新随机值
+如果需要确保随机的两次是完全不同的，需要用ref
 
 ```tsx
-  const [preInd, setPreInd] = useState(-1)
-
+  const preInd = useRef<number>(-1)
+  const curInd = useRef<number>(0)
   const handleRandom = () => {
     const n = 11
     const randomTexts = Array.from({ length: n }, (_, index) =>
       t(`prompt:prompt_text_random${index + 1}`)
     )
 
-    let newRandomIndex = Math.floor(Math.random() * (n - 1))
-
-    while (newRandomIndex == preInd) {
-      newRandomIndex = Math.floor(Math.random() * (n - 1))
+    curInd.current = Math.floor(Math.random() * n)
+    while (curInd.current === preInd.current) {
+      curInd.current = Math.floor(Math.random() * n)
     }
 
-    setText(randomTexts[newRandomIndex])
-    setPreInd(newRandomIndex)
+    textRef.current = randomTexts[curInd.current]
+    setTextState(randomTexts[curInd.current])
 
-    setVaildText(true)
-    setWarning(false)
   }
 ```
 
