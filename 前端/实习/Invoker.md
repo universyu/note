@@ -51,7 +51,7 @@ C --> D[ThreeJsRenderer]
 
 
 
-#### 封装conmmand
+#### 封装command
 
 ```tsx
 import { ICommand, getController } from './Command'
