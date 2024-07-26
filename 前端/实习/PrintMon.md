@@ -704,3 +704,46 @@ const InputSlider = styled('input')<InputSliderProps>(({ theme, overallScale }) 
 
 
 ![6](D:\note\前端\实习\src\6.png)
+
+
+
+### 将组件当做参数传递
+
+#### 传参处
+
+```tsx
+ {[<ScaleX />, <ScaleY />, <ScaleZ />].map((item, ind) => (
+          <InputItem key={ind} svgChild={item} />
+        ))}
+```
+
+
+
+#### 接收参数处
+
+```tsx
+import { styled } from '@mui/material/styles'
+import React from 'react'
+interface InputItemProps {
+  svgChild: React.ReactNode
+}
+
+
+const SvgWrapper = styled('div')(({ theme }) => ({
+  width: 20,
+  height: 20,
+  display: 'inline-flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+}))
+
+const InputItem: React.FC<InputItemProps> = ({ svgChild }) => {
+  return (
+      <SvgWrapper>{svgChild}</SvgWrapper>
+  )
+}
+
+export default InputItem
+
+```
+
