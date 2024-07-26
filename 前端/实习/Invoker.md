@@ -1,5 +1,19 @@
 # Invoker
 
+**结构**
+
+`globalStore`中存了`controller`和`invoker`，其中，`controller`有`invoker`的控制权
+
+```mermaid
+graph TB
+A[controller] --> B[invoker]
+A --> C[renderer]
+```
+
+
+
+
+
 **流程图（以更新缩放为例）**
 
 ```mermaid
@@ -104,4 +118,222 @@ export class ChangePosition implements ICommand {
     setRelativelyScale(newScale) //这里是一个globalStore存的变量
   }
 ```
+
+
+
+
+
+#### 完整代码
+
+##### Controller.ts
+
+```ts
+import { useEditorStore } from '@src/stores/editorStore'
+import { Invoker } from './Invoker'
+import ThreeJsRenderer from './ThreeJsRenderer'
+import { EditorContext } from './EditorContext'
+import * as THREE from 'three'
+
+type Props = {
+  context: EditorContext
+  canvas: HTMLCanvasElement
+}
+
+export class Controller {
+  public invoker: Invoker
+  private renderer: ThreeJsRenderer
+  private context: EditorContext
+
+  public constructor({ context, canvas }: Props) {
+    this.invoker = new Invoker()
+    this.context = context
+    this.renderer = new ThreeJsRenderer(canvas, this.context)
+
+    if (this.context.modelUrl) {
+      this.renderer.updateModel(this.context.modelUrl, this.context.modelTextureUrl)
+    } else {
+      console.error('Model url should not be empty!')
+    }
+  }
+
+  public dispose() {
+    this.renderer.dispose()
+    this.store.reset()
+  }
+
+  private get store() {
+    return useEditorStore.getState()
+  }
+
+  public updateEyeResources(eyeModelUrls: string[][]) {
+    this.context.eyeModelUrls = eyeModelUrls
+  }
+
+  public updateEyeModel(index: number) {
+    this.context.selectedEyeIndex = index
+    if (index >= 0 && index < this.context.eyeModelUrls.length) {
+      this.renderer.updateEyeModel(this.context.eyeModelUrls[this.context.selectedEyeIndex])
+    } else {
+      if (index !== -1) {
+        console.error('Invalid eye index!')
+      }
+      this.renderer.updateEyeModel([])
+    }
+  }
+
+  public onCanvasResize() {
+    this.renderer.onCanvasResize()
+  }
+
+  public updateBaseModel(baseUrl: string) {
+    this.renderer.updateBaseModel(baseUrl)
+  }
+
+  public updateModelPosition(newPosition: THREE.Vector3) {
+    this.renderer.updateModelPosition(newPosition)
+  }
+
+  public updateModelRotation(newRotation: number[]) {
+    this.renderer.rotateModel(newRotation)
+  }
+
+  public updateModelScale(scales: number[]) {
+    this.renderer.scaleModel(scales)
+  }
+}
+
+```
+
+
+
+##### ICommand.ts
+
+```ts
+import { useGlobalStore } from '@src/stores/globalStore'
+import { Controller } from '../Controller'
+export interface ICommand {
+  execute(): void | Promise<void>
+  undo(): void | Promise<void>
+}
+
+export function getController(): Controller | undefined {
+  const { controller } = useGlobalStore.getState()
+  return controller
+}
+```
+
+
+
+##### Invoker.ts
+
+```ts
+import { useEditorStore } from '@src/stores/editorStore'
+import { ICommand } from './commands/Command'
+
+export class Invoker {
+  undoStack: ICommand[] = []
+  redoStack: ICommand[] = []
+
+  public constructor() {}
+
+  public async executeCmd(cmd: ICommand) {
+    await cmd.execute()
+    this.undoStack.push(cmd)
+    this.redoStack = []
+    this.updateStack()
+  }
+
+  public async batchExecute<CMD extends ICommand, T extends Array<any>>(
+    // @ts-ignore
+    type: { new (...T): CMD },
+    selectedIndexes: number[],
+    ...args: T
+  ) {
+    const cmd = new type(selectedIndexes, ...args)
+    await cmd.execute()
+
+    this.undoStack.push(cmd)
+    this.redoStack = []
+    this.updateStack()
+  }
+
+  public redo(): Promise<ICommand> | undefined {
+    if (this.redoStack.length === 0) {
+      return
+    }
+
+    const toRedo = this.redoStack.pop() as ICommand
+    const res = toRedo.execute()
+    const handleRes = () => {
+      this.undoStack.push(toRedo)
+      this.updateStack()
+    }
+
+    if (res instanceof Promise) {
+      return new Promise<ICommand>((resolve) => {
+        res.then(() => {
+          handleRes()
+          resolve({ ...toRedo })
+        })
+      })
+    } else {
+      handleRes()
+      return new Promise<ICommand>((resolve) => resolve({ ...toRedo }))
+    }
+  }
+
+  public undo(): Promise<ICommand> | undefined {
+    if (this.undoStack.length === 0) {
+      return
+    }
+    const toUndo = this.undoStack.pop() as ICommand
+    const res = toUndo?.undo()
+    const handleRes = () => {
+      this.redoStack.push(toUndo)
+      this.updateStack()
+    }
+    if (res instanceof Promise) {
+      return new Promise<ICommand>((resolve) => {
+        res.then(() => {
+          handleRes()
+          resolve({ ...toUndo })
+        })
+      })
+    } else {
+      handleRes()
+      return new Promise<ICommand>((resolve) => resolve({ ...toUndo }))
+    }
+  }
+
+  public updateStack() {
+    useEditorStore.getState().updateStack(this.undoStack.length, this.redoStack.length)
+  }
+
+  public async execute<CMD extends ICommand, T extends Array<any>>(
+    // @ts-ignore
+    type: { new (...T): CMD },
+    ...args: T
+  ) {
+    const cmd = new type(...args)
+    await cmd.execute()
+
+    this.undoStack.push(cmd)
+    this.redoStack = []
+    this.updateStack()
+  }
+
+  private async genericChangeCommand<COMMAND extends ICommand, T extends any[]>(
+    type: new (...constructorArgs: T) => COMMAND,
+    ...constructorArgs: T
+  ) {
+    const cmd = new type(...constructorArgs)
+    await cmd.execute()
+    this.undoStack.push(cmd)
+    this.redoStack = []
+    this.updateStack()
+  }
+}
+```
+
+
 

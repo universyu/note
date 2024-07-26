@@ -154,3 +154,19 @@ import { useSDStore } from '@src/stores/sdStore'
 const { generateSD } = useSDStore()
 ```
 
+
+
+
+
+### Hook、普通使用法
+
+##### Hook法
+
+形如`const { makeId } = useGlobalStore()`的用法只能存在于`React`的组件函数中，且在变量更新的时候自动触发渲染
+
+
+
+##### 普通法
+
+形如`const { makeId } = useGlobalStore.getState()`的用法可以在任意地方使用，只是单纯的获取一次值，而不会跟随着全局变量做更新
+
