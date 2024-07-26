@@ -30,11 +30,11 @@ C --> D[ThreeJsRenderer]
 提供函数实现模型的更新
 
  ```tsx
- public scaleModel(scaleX: number, scaleY: number, scaleZ: number) {
-   if (this.object) {
-     this.object.scale.set(scaleX, scaleY, scaleZ);
+   public scaleModel(scales: number[]) {
+     if (this.object) {
+       this.object.scale.set(scales[0], scales[1], scales[2])
+     }
    }
- }
  ```
 
 
@@ -44,8 +44,8 @@ C --> D[ThreeJsRenderer]
 调用renderer的函数
 
 ```tsx
-  public updateModelScale(scaleX: number, scaleY: number, scaleZ: number) {
-    this.renderer.scaleModel(scaleX, scaleY, scaleZ)
+  public updateModelScale(scales: number[]) {
+    this.renderer.scaleModel(scales)
   }
 ```
 
@@ -55,27 +55,36 @@ C --> D[ThreeJsRenderer]
 
 ```tsx
 import { ICommand, getController } from './Command'
+import { useEditorStore } from '@src/stores/editorStore'
 
-export class ChangePosition implements ICommand {
+export class ChangeModelScale implements ICommand {
   preScale: number[]
   curScale: number[]
+  time: number
 
   public constructor(pre: number[], cur: number[]) {
     this.preScale = pre
     this.curScale = cur
+    this.time = Date.now()
   }
 
   execute(): void | Promise<void> {
     const controller = getController()
+    const { setRelativelyScale } = useEditorStore.getState()
+
     if (controller) {
-      controller.updateModelScale(this.curScale[0], this.curScale[1], this.curScale[2])
+      controller.updateModelScale(this.curScale)
+      setRelativelyScale(this.curScale)
     }
   }
 
   undo(): void | Promise<void> {
     const controller = getController()
+    const { setRelativelyScale } = useEditorStore.getState()
+
     if (controller) {
-      controller.updateModelScale(this.preScale[0], this.preScale[1], this.preScale[2])
+      controller.updateModelScale(this.preScale)
+      setRelativelyScale(this.preScale)
     }
   }
 }
@@ -111,11 +120,10 @@ export class ChangePosition implements ICommand {
 
 ```tsx
   const handleChangeScale = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const preScale = [relativelyScale[0], relativelyScale[1], relativelyScale[2]]
+    const preScale = [...relativelyScale]
     const newScale = [...preScale]
     newScale[index] = parseFloat(e.target.value)
     invoker!.execute(ChangeModelScale, preScale, newScale)
-    setRelativelyScale(newScale) //这里是一个globalStore存的变量
   }
 ```
 
@@ -200,18 +208,22 @@ export class Controller {
   public updateModelScale(scales: number[]) {
     this.renderer.scaleModel(scales)
   }
+  public resetModel() {
+    this.renderer.resetModel()
+  }
 }
 
 ```
 
 
 
-##### ICommand.ts
+##### Command.ts
 
 ```ts
 import { useGlobalStore } from '@src/stores/globalStore'
 import { Controller } from '../Controller'
 export interface ICommand {
+  time: number
   execute(): void | Promise<void>
   undo(): void | Promise<void>
 }
@@ -220,6 +232,7 @@ export function getController(): Controller | undefined {
   const { controller } = useGlobalStore.getState()
   return controller
 }
+
 ```
 
 
@@ -317,7 +330,13 @@ export class Invoker {
     const cmd = new type(...args)
     await cmd.execute()
 
-    this.undoStack.push(cmd)
+    if (
+      this.undoStack.length === 0 ||
+      this.undoStack[this.undoStack.length - 1].time + 500 <= cmd.time
+    ) {
+      this.undoStack.push(cmd)
+    }
+
     this.redoStack = []
     this.updateStack()
   }
@@ -333,6 +352,7 @@ export class Invoker {
     this.updateStack()
   }
 }
+
 ```
 
 
