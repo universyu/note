@@ -71,7 +71,8 @@ export class Move implements ICommand {
   public constructor(value: number, index: number) {
     const { modelPosition } = useEditorStore.getState()
     this.prePosition = [...modelPosition]
-    this.value = value
+    this.prePosition[index] = value
+    this.value = modelPosition[index]
     this.index = index
   }
 

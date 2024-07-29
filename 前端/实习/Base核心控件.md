@@ -64,9 +64,10 @@
 
 直接使用全局变量作为`value`
 
-`onChange`需要修改全局变量，然后直接调用`controller`去控制`renderer`做出修改，还需要修改输入框的变量，需要节流：
+`onChange`需要修改全局变量，然后直接调用`controller`去控制`renderer`做出修改。需要存储上一次的值，还需要修改输入框的变量，需要节流：
 
 ```tsx
+  let preVal = init
   let lastCall = 0
   const handleDrag = (e: React.ChangeEvent<HTMLInputElement>) => {
     const curCall = Date.now()
@@ -76,10 +77,63 @@
     const newDependencies = [...dependencies]
     newDependencies[index] = parseFloat(e.target.value)
     setDependencies(newDependencies)
-    draging(parseFloat(e.target.value), index)  //controller.updateModelScale(e.target.value), index)
+    preVal = e.target.value
+    draging(parseFloat(e.target.value), index)
     setValueInput(e.target.value)
     lastCall = curCall
   }
 ```
 
 `onMouseUp`直接发`Command`，`Command`会改变全局变量，然后会被上面的`useEffect`检测并修改输入框的值
+
+```tsx
+        onMouseUp={() => {
+          command(parseFloat(preVal))
+        }}
+```
+
+
+
+
+
+**command示例**
+
+```tsx
+import { ICommand, getController } from './Command'
+import { useEditorStore } from '@src/stores/editorStore'
+
+export class Move implements ICommand {
+  prePosition: number[]
+  value: number
+  index: number
+  public constructor(value: number, index: number) {
+    const { modelPosition } = useEditorStore.getState()
+    this.prePosition = [...modelPosition]
+    this.prePosition[index] = value
+    this.value = modelPosition[index]
+    this.index = index
+  }
+
+  execute(): void | Promise<void> {
+    const controller = getController()
+    const { setModelPosition } = useEditorStore.getState()
+    if (controller) {
+      controller.updateModelPosition(this.value, this.index)
+      const curPosition = [...this.prePosition]
+      curPosition[this.index] = this.value
+      setModelPosition(curPosition)
+    }
+  }
+
+  undo(): void | Promise<void> {
+    const controller = getController()
+    const { setModelPosition } = useEditorStore.getState()
+    if (controller) {
+      controller.updateModelPosition(this.prePosition[this.index], this.index)
+      setModelPosition(this.prePosition)
+    }
+  }
+}
+
+```
+
