@@ -30,9 +30,14 @@ C --> D[ThreeJsRenderer]
 提供函数实现模型的更新
 
  ```tsx
-   public scaleModel(scales: number[]) {
+   public moveModel(value: number, index: number) {
+     const newVal = this.originPosition[index] + value
      if (this.object) {
-       this.object.scale.set(scales[0], scales[1], scales[2])
+       if (index === 0) {
+         this.object.position.x = newVal
+       } else if (index === 1) {
+         this.object.position.y = newVal
+       }
      }
    }
  ```
@@ -44,8 +49,8 @@ C --> D[ThreeJsRenderer]
 调用renderer的函数
 
 ```tsx
-  public updateModelScale(scales: number[]) {
-    this.renderer.scaleModel(scales)
+  public updateModelPosition = (value: number, index: number) => {
+    this.renderer.moveModel(value, index)
   }
 ```
 
@@ -53,38 +58,40 @@ C --> D[ThreeJsRenderer]
 
 #### 封装command
 
+不要在前端以参数的形式给`Command`传入前后状态，而是在`Command`中直接取得需要的参数，`Command.ts`作为基础，其中包含了获取`controller`的方法，如果实例`Command`需要调用到`controller`，那么就调用这个方法
+
 ```tsx
 import { ICommand, getController } from './Command'
 import { useEditorStore } from '@src/stores/editorStore'
 
-export class ChangeModelScale implements ICommand {
-  preScale: number[]
-  curScale: number[]
-  time: number
-
-  public constructor(pre: number[], cur: number[]) {
-    this.preScale = pre
-    this.curScale = cur
-    this.time = Date.now()
+export class Move implements ICommand {
+  prePosition: number[]
+  value: number
+  index: number
+  public constructor(value: number, index: number) {
+    const { modelPosition } = useEditorStore.getState()
+    this.prePosition = [...modelPosition]
+    this.value = value
+    this.index = index
   }
 
   execute(): void | Promise<void> {
     const controller = getController()
-    const { setRelativelyScale } = useEditorStore.getState()
-
+    const { setModelPosition } = useEditorStore.getState()
     if (controller) {
-      controller.updateModelScale(this.curScale)
-      setRelativelyScale(this.curScale)
+      controller.updateModelPosition(this.value, this.index)
+      const curPosition = [...this.prePosition]
+      curPosition[this.index] = this.value
+      setModelPosition(curPosition)
     }
   }
 
   undo(): void | Promise<void> {
     const controller = getController()
-    const { setRelativelyScale } = useEditorStore.getState()
-
+    const { setModelPosition } = useEditorStore.getState()
     if (controller) {
-      controller.updateModelScale(this.preScale)
-      setRelativelyScale(this.preScale)
+      controller.updateModelPosition(this.prePosition[this.index], this.index)
+      setModelPosition(this.prePosition)
     }
   }
 }
@@ -119,15 +126,8 @@ export class ChangeModelScale implements ICommand {
 #### UI触发
 
 ```tsx
-  const handleChangeScale = (index: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const preScale = [...relativelyScale]
-    const newScale = [...preScale]
-    newScale[index] = parseFloat(e.target.value)
-    invoker!.execute(ChangeModelScale, preScale, newScale)
-  }
+invoker.execute(Move, value, index)
 ```
-
-
 
 
 
@@ -145,6 +145,7 @@ import * as THREE from 'three'
 type Props = {
   context: EditorContext
   canvas: HTMLCanvasElement
+  cubeCanvas: HTMLCanvasElement
 }
 
 export class Controller {
@@ -152,10 +153,10 @@ export class Controller {
   private renderer: ThreeJsRenderer
   private context: EditorContext
 
-  public constructor({ context, canvas }: Props) {
+  public constructor({ context, canvas, cubeCanvas }: Props) {
     this.invoker = new Invoker()
     this.context = context
-    this.renderer = new ThreeJsRenderer(canvas, this.context)
+    this.renderer = new ThreeJsRenderer({ canvas, context: this.context, cubeCanvas })
 
     if (this.context.modelUrl) {
       this.renderer.updateModel(this.context.modelUrl, this.context.modelTextureUrl)
@@ -197,19 +198,32 @@ export class Controller {
     this.renderer.updateBaseModel(baseUrl)
   }
 
-  public updateModelPosition(newPosition: THREE.Vector3) {
-    this.renderer.updateModelPosition(newPosition)
+  public updateModelPosition = (value: number, index: number) => {
+    this.renderer.moveModel(value, index)
   }
 
-  public updateModelRotation(newRotation: number[]) {
-    this.renderer.rotateModel(newRotation)
+  public updateModelRotation = (value: number, index: number) => {
+    this.renderer.rotateModel(value, index)
   }
 
-  public updateModelScale(scales: number[]) {
-    this.renderer.scaleModel(scales)
+  public updateModelScale = (value: number, index: number) => {
+    this.renderer.scaleModel(value, index)
   }
-  public resetModel() {
+  public resetModel = () => {
     this.renderer.resetModel()
+  }
+  public resetUndo = () => {
+    this.renderer.resetUndo()
+  }
+  public lockedScale(scale: number) {
+    this.renderer.lockedScale(scale)
+  }
+  public updateCameraAngle(azimuthal: number, polar: number) {
+    this.renderer.updateCameraAngle(azimuthal, polar)
+  }
+
+  public clearCameraCubeMesh() {
+    this.renderer.clearCameraCubeMesh()
   }
 }
 
@@ -223,7 +237,6 @@ export class Controller {
 import { useGlobalStore } from '@src/stores/globalStore'
 import { Controller } from '../Controller'
 export interface ICommand {
-  time: number
   execute(): void | Promise<void>
   undo(): void | Promise<void>
 }
@@ -329,14 +342,7 @@ export class Invoker {
   ) {
     const cmd = new type(...args)
     await cmd.execute()
-
-    if (
-      this.undoStack.length === 0 ||
-      this.undoStack[this.undoStack.length - 1].time + 500 <= cmd.time
-    ) {
-      this.undoStack.push(cmd)
-    }
-
+    this.undoStack.push(cmd)
     this.redoStack = []
     this.updateStack()
   }

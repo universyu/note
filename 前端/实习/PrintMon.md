@@ -688,7 +688,6 @@ const InputSlider = styled('input')<InputSliderProps>(({ theme, overallScale }) 
         type="range"
         min="0"
         max="100"
-        ref={sliderRef}
         value={String(overallScale)}
         onChange={(e) => setOverallScale(parseFloat(e.target.value))}
         overallScale={overallScale}
@@ -746,4 +745,5 @@ const InputItem: React.FC<InputItemProps> = ({ svgChild }) => {
 export default InputItem
 
 ```
+
 
