@@ -1,6 +1,6 @@
 # Invoker
 
-**结构**
+#### **结构**
 
 `globalStore`中存了`controller`和`invoker`，其中，`controller`有`invoker`的控制权
 
@@ -10,9 +10,8 @@ A[controller] --> B[invoker]
 A --> C[renderer]
 ```
 
-
-
-
+UI存储变量用作`offset`，ThreeJsRenderer存储变量记录实际数据
+`command`内部更新UI的变量，并调用controller来调用ThreeJsRenderer的方法
 
 **流程图（以更新缩放为例）**
 
@@ -101,8 +100,6 @@ export class Move implements ICommand {
 
 
 
-
-
 #### invoker执行command
 
 ```tsx
@@ -126,6 +123,8 @@ export class Move implements ICommand {
 
 #### UI触发
 
+这里传入发送变化前一个瞬间的值，当下的值可以在发生变化后从全局存储文件中直接获取
+
 ```tsx
 invoker.execute(Move, value, index)
 ```
@@ -141,7 +140,6 @@ import { useEditorStore } from '@src/stores/editorStore'
 import { Invoker } from './Invoker'
 import ThreeJsRenderer from './ThreeJsRenderer'
 import { EditorContext } from './EditorContext'
-import * as THREE from 'three'
 
 type Props = {
   context: EditorContext
@@ -216,7 +214,7 @@ export class Controller {
   public resetUndo = () => {
     this.renderer.resetUndo()
   }
-  public lockedScale(scale: number) {
+  public lockedScale = (scale: number) => {
     this.renderer.lockedScale(scale)
   }
   public updateCameraAngle(azimuthal: number, polar: number) {

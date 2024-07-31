@@ -23,24 +23,25 @@
 ```tsx
   const handleInput = () => {
     const newDependencies = [...dependencies]
-    if (/^-?\d+(\.\d+)?$/.test(valueInput)) {
-      if (parseFloat(valueInput) > maxV) {
-        setValueInput(maxV.toString())
+    const valNum = parseFloat(parseFloat(value).toFixed(1))
+    if (/^-?\d+(\.\d+)?$/.test(value)) {
+      if (valNum > maxV) {
+        setValue(maxV.toString())
         newDependencies[index] = maxV
         setDependencies(newDependencies)
         command(maxV)
-      } else if (parseFloat(valueInput) < minV) {
-        setValueInput(minV.toString())
+      } else if (valNum < minV) {
+        setValue(minV.toString())
         newDependencies[index] = minV
         setDependencies(newDependencies)
         command(minV)
       } else {
-        newDependencies[index] = parseFloat(valueInput)
+        newDependencies[index] = valNum
         setDependencies(newDependencies)
-        command(parseFloat(valueInput))
+        command(valNum)
       }
     } else {
-      setValueInput('0')
+      setValue('0')
       newDependencies[index] = 0
       setDependencies(newDependencies)
       command(0)
@@ -78,8 +79,8 @@
     newDependencies[index] = parseFloat(e.target.value)
     setDependencies(newDependencies)
     preVal = e.target.value
-    draging(parseFloat(e.target.value), index)
-    setValueInput(e.target.value)
+    draging(parseFloat(preVal), index)
+    setValueInput(preVal)
     lastCall = curCall
   }
 ```
@@ -91,8 +92,6 @@
           command(parseFloat(preVal))
         }}
 ```
-
-
 
 
 
@@ -134,6 +133,5 @@ export class Move implements ICommand {
     }
   }
 }
-
 ```
 
