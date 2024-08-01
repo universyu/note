@@ -18,38 +18,52 @@
 
 - 正则表达式校验值为数字，否则让值变成0
 - 限制范围在最大值和最小值之间
-- 修改输入框的值，修改全局变量的值，触发`Command`（`Command`里面已经修改了全局变量，不需要在这里修改）
 
 ```tsx
+  const parseAndValidateValue = (): number => {
+    let valNum = parseFloat(parseFloat(value).toFixed(1))
+    if (valNum > maxV) valNum = maxV
+    else if (valNum < minV) valNum = minV
+    return valNum
+  }
+
+  const backupVal = useRef<number>(parseFloat(init))
+  const backupValues = useRef<number[]>([1, 1, 1])
   const handleInput = () => {
     const newDependencies = [...dependencies]
-    const valNum = parseFloat(parseFloat(value).toFixed(1))
-    if (/^-?\d+(\.\d+)?$/.test(value)) {
-      if (valNum > maxV) {
-        setValue(maxV.toString())
-        newDependencies[index] = maxV
+    if (careLock) {
+      if (/^-?\d+(\.\d+)?$/.test(value)) {
+        const valNum = parseAndValidateValue()
+        const proportion = valNum / dependencies[index]
+        const newDependencies = dependencies.map((item) => item * proportion)
         setDependencies(newDependencies)
-        command(maxV)
-      } else if (valNum < minV) {
-        setValue(minV.toString())
-        newDependencies[index] = minV
-        setDependencies(newDependencies)
-        command(minV)
       } else {
-        newDependencies[index] = valNum
-        setDependencies(newDependencies)
-        command(valNum)
+        setDependencies([0.5, 0.5, 0.5])
       }
     } else {
-      setValue('0')
-      newDependencies[index] = 0
-      setDependencies(newDependencies)
-      command(0)
+      if (/^-?\d+(\.\d+)?$/.test(value)) {
+        const valNum = parseAndValidateValue()
+        newDependencies[index] = valNum
+        setDependencies(newDependencies)
+      } else {
+        newDependencies[index] = 0.5
+        setDependencies(newDependencies)
+      }
     }
+    if (careLock) {
+      const commandFn = command as (values: number[]) => void
+      commandFn(backupValues.current)
+    } else {
+      const commandFn = command as (value: number) => void
+      commandFn(backupVal.current)
+    }
+
+    backupVal.current = dependencies[index]
+    backupValues.current = [...dependencies]
   }
 ```
 
-外界修改（这里特指`reset`按钮）全局变量时，同步做更新
+外界修改（这里特指`reset`按钮）全局变量时，同步做更新，这部分代码写在调用组件的位置
 
 ```tsx
   useEffect(() => {
@@ -65,32 +79,55 @@
 
 直接使用全局变量作为`value`
 
-`onChange`需要修改全局变量，然后直接调用`controller`去控制`renderer`做出修改。需要存储上一次的值，还需要修改输入框的变量，需要节流：
+拖动的时候直接触发`controller`的函数
 
 ```tsx
-  let preVal = init
-  let lastCall = 0
+  const backupValues = useRef<number[]>([1, 1, 1])
+  const backupVal = useRef<string>(init)
+  const lastCall = useRef<number>(0)
   const handleDrag = (e: React.ChangeEvent<HTMLInputElement>) => {
     const curCall = Date.now()
-    if (curCall - lastCall < 50) {
+    if (curCall - lastCall.current < 50) {
       return
     }
-    const newDependencies = [...dependencies]
-    newDependencies[index] = parseFloat(e.target.value)
-    setDependencies(newDependencies)
-    preVal = e.target.value
-    draging(parseFloat(preVal), index)
-    setValueInput(preVal)
-    lastCall = curCall
+    const newVal = e.target.value
+    if (careLock) {
+      const proportion = parseFloat(e.target.value) / backupValues.current[index]
+      const newDependencies = backupValues.current.map((item) => {
+        const multipliedValue = item * proportion
+        return parseFloat(multipliedValue.toFixed(1))
+      })
+      const dragingFn = draging as (values: number[]) => void
+      dragingFn(newDependencies)
+    } else {
+      const dragingFn = draging as (value: number, index: number) => void
+      dragingFn(parseFloat(newVal), index)
+    }
+    lastCall.current = curCall
   }
 ```
 
 `onMouseUp`直接发`Command`，`Command`会改变全局变量，然后会被上面的`useEffect`检测并修改输入框的值
 
 ```tsx
-        onMouseUp={() => {
-          command(parseFloat(preVal))
-        }}
+      onMouseUp={() => {
+        if (careLock) {
+          const commandFn = command as (values: number[]) => void
+          commandFn(backupValues.current)
+        } else {
+          const commandFn = command as (value: number) => void
+          commandFn(parseFloat(backupVal.current))
+        }
+      }}
+```
+
+`onMouseDown`更新回退值
+
+```tsx
+      onMouseDown={() => {
+        backupVal.current = dependencies[index].toString()
+        backupValues.current = [...dependencies]
+      }}
 ```
 
 
@@ -98,40 +135,32 @@
 **command示例**
 
 ```tsx
-import { ICommand, getController } from './Command'
-import { useEditorStore } from '@src/stores/editorStore'
+import { ICommand, getController, getEditStore } from './Command'
 
 export class Move implements ICommand {
-  prePosition: number[]
-  value: number
+  prePosition: number
+  curPosition: number
   index: number
   public constructor(value: number, index: number) {
-    const { modelPosition } = useEditorStore.getState()
-    this.prePosition = [...modelPosition]
-    this.prePosition[index] = value
-    this.value = modelPosition[index]
+    this.prePosition = value
     this.index = index
+    this.curPosition = getEditStore().modelPosition[index]
   }
 
   execute(): void | Promise<void> {
     const controller = getController()
-    const { setModelPosition } = useEditorStore.getState()
     if (controller) {
-      controller.updateModelPosition(this.value, this.index)
-      const curPosition = [...this.prePosition]
-      curPosition[this.index] = this.value
-      setModelPosition(curPosition)
+      controller.updateModelPosition(this.curPosition, this.index)
     }
   }
 
   undo(): void | Promise<void> {
     const controller = getController()
-    const { setModelPosition } = useEditorStore.getState()
     if (controller) {
-      controller.updateModelPosition(this.prePosition[this.index], this.index)
-      setModelPosition(this.prePosition)
+      controller.updateModelPosition(this.prePosition, this.index)
     }
   }
 }
+
 ```
 
