@@ -4,8 +4,6 @@
 
 普通函数直接调用则this绑定全局变量，严格模式下，this绑定到undefined
 
-
-
 ### 隐式绑定
 
 函数作为对象的属性调用则会将this隐式绑定到这个对象
@@ -37,6 +35,28 @@ doFoo(foo)
 ```
 
 即便是传入js内置函数也会发生this丢失，比如setTimeout等
+
+
+
+##### 组件传参防止this丢失
+
+**传入的函数**
+
+```tsx
+  const lockedScale = (scale: number) => {
+    controller!.lockedScale(scale) //在这里确保了是让controller调用这个函数，不会丢失this
+  }
+```
+
+**传入组件**
+
+```tsx
+      <InputSlider
+        draging={lockedScale}
+      />
+```
+
+
 
 
 
