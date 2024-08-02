@@ -1,148 +1,17 @@
 # PrintMon
 
-### 整体结构
-
-#### index.html
-
-直接导入`main.tsx`
-
-```html
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>New Template</title>
-  </head>
-
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
-```
-
-
-
-#### src/main.tsx
-
-对`src/Generator`做封装，这里导入了`./global.css`做样式设计，也导入了文本翻译的库：
-```tsx
-import i18n from 'i18next';
-import { initReactI18next, I18nextProvider } from 'react-i18next';
-import enJson from '@src/assets/locales/en.json';
-import zhJson from '@src/assets/locales/zh.json';
-```
-
-利用文本翻译库的标签包裹页面内容
-
-```tsx
-function MainWrapper() {
-  i18n.use(initReactI18next).init({
-    resources: {
-      en: { ...enJson },
-      zh: { ...zhJson },
-    },
-    lng: 'en',
-  });
-
-  return (
-    <>
-      <React.StrictMode>
-        <I18nextProvider i18n={i18n}>
-          <Generator />
-        </I18nextProvider>
-      </React.StrictMode>
-    </>
-  );
-}
-
-ReactDOM.createRoot(document.getElementById('root')!).render(<MainWrapper />);
-```
-
-其中用到的翻译内容如下：
-
-```json
-//en.json
-{
-  "prompt": {
-    "prompt_type_text": "Generate from Text",
-    "prompt_type_image": "Generate from Image",
-    "preview": "Preview"
-  }
-}
-
-//zh.json
-{
-  "prompt": {
-    "prompt_type_text": "从文字生成",
-    "prompt_type_image": "从图片生成",
-    "preview": "预览"
-  }
-}
-```
-
-
-
-#### src/Generator.tsx
-
-这里直接返回写好的组件
-
-```tsx
-import React from 'react'
-import { Main } from './pages/Main'
-
-export default function Generator() {
-
-  return (
-    <Main></Main>
-  )
-}
-```
-
-
-
-#### src/pages/Main.tsx
-
-设置整个页面，`pages`里面的组件都在这里决定要不要展现
-
-```tsx
-import Prompt from './Prompt'
-
-export function Main() {
-
-  return (
-    <div
-      style={{
-        backgroundColor: '#EBEBEB',
-        height: '100%',
-        width: '100%',
-        position: 'absolute',
-        overflow: 'hidden',
-      }}
-    >
-      <Prompt />
-    </div>
-  )
-}
-```
-
-
-
-
-
 ### 仅父级触发事件
 
 为了实现：当鼠标进入父级标签的时候背景变色，父级和子级之间变化时不变色，从父级出去时变色
 可以用事件监听的`currentTarget`
 
 ```tsx
-onMouseOver={(e) => {
-     e.currentTarget.style.backgroundColor = 'rgba(0, 255, 0, 0.3)';  
-}}
-onMouseOut={(e) => {
-     e.currentTarget.style.backgroundColor = 'rgba(0, 255, 0, 0.2)';
-}}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = 'rgba(0, 255, 0, 0.3)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = '#d9eee1'
+        }}
 ```
 
 
@@ -284,6 +153,21 @@ left: 0;
             ></div>
           </div>
 ```
+
+```css
+@moveUp{
+    from{
+    	top: 75%;
+    }
+    to{
+    	top: 0;
+    }
+}
+```
+
+
+
+
 
 
 
@@ -745,5 +629,4 @@ const InputItem: React.FC<InputItemProps> = ({ svgChild }) => {
 export default InputItem
 
 ```
-
 

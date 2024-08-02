@@ -147,7 +147,7 @@ var createCounter = function(init) {
     fn2(2);
 ```
 
-这里c在fn2中声明，声明被拉到fn1的顶部，第一次输出c是`undefined` c被赋值成4，fn2继承fn1的词法环境，在这个环境中，c已经是4了，所以第二次输出的是4
+这里c在fn1中声明，声明被拉到fn1的顶部，第一次输出c是`undefined` c被赋值成4，fn2继承fn1的词法环境，在这个环境中，c已经是4了，所以第二次输出的是4
 
 ### 数组
 
@@ -776,7 +776,7 @@ let longestPalindrome = function(s) {
             }
         }
         let originCenter = Math.floor(maxCenter/2);
-        let originR = Math.floor( (maxR-1) / 2 );
+        let originR = Math.floor( (maxR-1) / 2 );`
         return s.slice( originCenter-originR, originCenter+originR+1 );
     };
 ```
