@@ -14,7 +14,7 @@
 function foo(){
     console.log(this.a)
 }
-var obj - {
+var obj = {
     a: 42,
     foo: foo
 }

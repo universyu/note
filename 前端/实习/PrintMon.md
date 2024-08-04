@@ -193,8 +193,6 @@ left: 0;
 
 
 
-
-
 ### Dialog
 
 `Dialog`标签会出现在和`id=root`的`div`同一级
@@ -420,10 +418,7 @@ type TextInputComponentProps = {
 const TextInput: React.FC<TextInputComponentProps> = ({ style, props }) => {
   const handleRandom = () => {
     props.setText('A cute cartoon tiger character with bright orange fur and black stripes.')
-    if (!props.vaild ?? false) { //可选链
-      props.setVaild?.(true) //可选参数
-    }
-    //@ts-ignore
+    props.setVaild?.(true) 
   }
   ...
 }
