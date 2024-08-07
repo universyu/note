@@ -20,7 +20,7 @@
 - 限制范围在最大值和最小值之间
 
 ```tsx
-  const parseAndValidateValue = (): number => {
+ const parseAndValidateValue = (): number => {
     let valNum = parseFloat(parseFloat(value).toFixed(1))
     if (valNum > maxV) valNum = maxV
     else if (valNum < minV) valNum = minV
@@ -61,6 +61,11 @@
     backupVal.current = dependencies[index]
     backupValues.current = [...dependencies]
   }
+  const handleKeyDOWN = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleInput()
+    }
+  }
 ```
 
 外界修改（这里特指`reset`按钮）全局变量时，同步做更新，这部分代码写在调用组件的位置
@@ -82,7 +87,7 @@
 拖动的时候直接触发`controller`的函数
 
 ```tsx
-  const backupValues = useRef<number[]>([1, 1, 1])
+const backupValues = useRef<number[]>([1, 1, 1])
   const backupVal = useRef<string>(init)
   const lastCall = useRef<number>(0)
   const handleDrag = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,6 +110,7 @@
     }
     lastCall.current = curCall
   }
+
 ```
 
 `onMouseUp`直接发`Command`，`Command`会改变全局变量，然后会被上面的`useEffect`检测并修改输入框的值
@@ -138,26 +144,36 @@
 import { ICommand, getController, getEditStore } from './Command'
 
 export class Move implements ICommand {
-  prePosition: number
-  curPosition: number
-  index: number
-  public constructor(value: number, index: number) {
-    this.prePosition = value
-    this.index = index
-    this.curPosition = getEditStore().modelPosition[index]
+  prePosition: { x?: number; y?: number; z?: number }
+  curPosition: { x?: number; y?: number; z?: number }
+  public constructor(params: { x?: number; y?: number; z?: number }) {
+    this.prePosition = params
+
+    const modelPosition = getEditStore().modelPosition
+    this.curPosition = {}
+
+    if (params.x !== undefined) {
+      this.curPosition.x = modelPosition[0]
+    }
+    if (params.y !== undefined) {
+      this.curPosition.y = modelPosition[1]
+    }
+    if (params.z !== undefined) {
+      this.curPosition.z = modelPosition[2]
+    }
   }
 
   execute(): void | Promise<void> {
     const controller = getController()
     if (controller) {
-      controller.updateModelPosition(this.curPosition, this.index)
+      controller.updateModelPosition(this.curPosition)
     }
   }
 
   undo(): void | Promise<void> {
     const controller = getController()
     if (controller) {
-      controller.updateModelPosition(this.prePosition, this.index)
+      controller.updateModelPosition(this.prePosition)
     }
   }
 }

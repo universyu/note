@@ -29,22 +29,27 @@ C --> D[ThreeJsRenderer]
 提供函数实现模型的更新
 
  ```tsx
-   public moveModel(value: number, index: number) {
-     const newVal = this.originPosition[index] + value
+   public moveModel(params: { x?: number; y?: number; z?: number }) {
+     const { x, y, z } = params
      if (this.object) {
-       if (index === 0) {
-         this.object.position.x = newVal
-       } else if (index === 1) {
-         this.object.position.y = newVal
-       } else if (index === 2) {
-         this.offsetZ = this.originoffsetZ + value
-       }
+       if (x !== undefined) this.object.position.x = x
+       if (y !== undefined) this.object.position.y = y
+       if (z !== undefined) this.offsetZ = z
  
        this.object.updateMatrixWorld()
        this.convexHull.matrix = this.object.matrix.clone()
        if (this.baseModel) {
-         this.baseBox.setFromObject(this.baseModel)
-         this.object.position.z -= this.findMinZ() - this.baseBox.max.z + this.offsetZ
+         this.object.position.z -=
+           findMinZ(this.convexHull) - findMaxZ(this.baseConvexHubll) + this.offsetZ
+         this.object.updateMatrixWorld()
+         this.convexHull.matrix = this.object.matrix.clone()
+         this.positionLimits = findRangeBounds(
+           this.convexHull,
+           this.baseConvexHubll,
+           this.object.position.x,
+           this.object.position.y
+         )
+         this.store.setPositionLimits(this.positionLimits)
        }
      }
    }
@@ -57,11 +62,36 @@ C --> D[ThreeJsRenderer]
 在这里实现UI变量的更改以及模型的更改
 
 ```tsx
-  public updateModelPosition = (value: number, index: number) => {
-    const newPosition = [...this.store.modelPosition]
-    newPosition[index] = value
+  public updateModelPosition = (params: { x?: number; y?: number; z?: number }) => {
+    const { positionLimits } = this.store
+    const newPosition: number[] = [...this.store.modelPosition]
+    const updatePosition = (value: number, index: number) => {
+      if (value < positionLimits[index * 2]) {
+        newPosition[index] = positionLimits[index * 2]
+      } else if (value > positionLimits[index * 2 + 1]) {
+        newPosition[index] = positionLimits[index * 2 + 1]
+      } else {
+        newPosition[index] = value
+      }
+    }
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) {
+        switch (key) {
+          case 'x':
+            updatePosition(value, 0)
+            break
+          case 'y':
+            updatePosition(value, 1)
+            break
+          case 'z':
+            updatePosition(value, 2)
+            break
+        }
+      }
+    })
     this.store.setModelPosition(newPosition)
-    this.renderer.moveModel(value, index)
+    this.renderer.moveModel(params)
   }
 ```
 
@@ -72,31 +102,39 @@ C --> D[ThreeJsRenderer]
 不要在前端以参数的形式给`Command`传入前后状态，而是在`Command`中直接取得需要的参数。
 
 ```tsx
-import { throws } from 'assert'
-import { ICommand, getController } from './Command'
-import { useEditorStore } from '@src/stores/editorStore'
+import { ICommand, getController, getEditStore } from './Command'
 
 export class Move implements ICommand {
-  prePosition: number
-  curPosition: number
-  index: number
-  public constructor(value: number, index: number) {
-    this.prePosition = value
-    this.index = index
-    this.curPosition = useEditorStore.getState().modelPosition[index]
+  prePosition: { x?: number; y?: number; z?: number }
+  curPosition: { x?: number; y?: number; z?: number }
+  public constructor(params: { x?: number; y?: number; z?: number }) {
+    this.prePosition = params
+
+    const modelPosition = getEditStore().modelPosition
+    this.curPosition = {}
+
+    if (params.x !== undefined) {
+      this.curPosition.x = modelPosition[0]
+    }
+    if (params.y !== undefined) {
+      this.curPosition.y = modelPosition[1]
+    }
+    if (params.z !== undefined) {
+      this.curPosition.z = modelPosition[2]
+    }
   }
 
   execute(): void | Promise<void> {
     const controller = getController()
     if (controller) {
-      controller.updateModelPosition(this.curPosition, this.index)
+      controller.updateModelPosition(this.curPosition)
     }
   }
 
   undo(): void | Promise<void> {
     const controller = getController()
     if (controller) {
-      controller.updateModelPosition(this.prePosition, this.index)
+      controller.updateModelPosition(this.prePosition)
     }
   }
 }
@@ -131,7 +169,7 @@ export class Move implements ICommand {
 这里传入发送变化前一个瞬间的值，当下的值可以在发生变化后从全局存储文件中直接获取
 
 ```tsx
-invoker.execute(Move, value, index)
+invoker.execute(Move, {x: 1})
 ```
 
 
@@ -141,11 +179,12 @@ invoker.execute(Move, value, index)
 ##### Controller.ts
 
 ```ts
+import { SCALE_MAX, SCALE_MIN } from '@src/core/EditorConstants'
 import { useEditorStore } from '@src/stores/editorStore'
+import { BASE_DEFAULT_COLOR } from './EditorConstants'
+import { EditorContext } from './EditorContext'
 import { Invoker } from './Invoker'
 import ThreeJsRenderer from './ThreeJsRenderer'
-import { EditorContext } from './EditorContext'
-
 type Props = {
   context: EditorContext
   canvas: HTMLCanvasElement
@@ -240,44 +279,124 @@ export class Controller {
     this.renderer.updateBaseModel(baseUrl)
   }
 
-  public updateModelPosition = (value: number, index: number) => {
-    const newPosition = [...this.store.modelPosition]
-    newPosition[index] = value
+  public updateBaseColor(color: string) {
+    this.store.setBaseColor(color)
+    this.renderer.updateBaseColor(color)
+  }
+
+  public updateModelPosition = (params: { x?: number; y?: number; z?: number }) => {
+    const { positionLimits } = this.store
+    const newPosition: number[] = [...this.store.modelPosition]
+    const updatePosition = (value: number, index: number) => {
+      if (value < positionLimits[index * 2]) {
+        newPosition[index] = positionLimits[index * 2]
+      } else if (value > positionLimits[index * 2 + 1]) {
+        newPosition[index] = positionLimits[index * 2 + 1]
+      } else {
+        newPosition[index] = value
+      }
+    }
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) {
+        switch (key) {
+          case 'x':
+            updatePosition(value, 0)
+            break
+          case 'y':
+            updatePosition(value, 1)
+            break
+          case 'z':
+            updatePosition(value, 2)
+            break
+        }
+      }
+    })
     this.store.setModelPosition(newPosition)
-    this.renderer.moveModel(value, index)
+    this.renderer.moveModel(params)
   }
 
-  public updateModelRotation = (value: number, index: number) => {
-    const newRotation = [...this.store.modelRotation]
-    newRotation[index] = value
+  public updateModelRotation = (params: { x?: number; y?: number; z?: number }) => {
+    const newRotation: number[] = [...this.store.modelRotation]
+
+    const updateRotation = (value: number, index: number) => {
+      newRotation[index] = value
+    }
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) {
+        switch (key) {
+          case 'x':
+            updateRotation(value, 0)
+            break
+          case 'y':
+            updateRotation(value, 1)
+            break
+          case 'z':
+            updateRotation(value, 2)
+            break
+        }
+      }
+    })
+
     this.store.setModelRotation(newRotation)
-    this.renderer.rotateModel(value, index)
+    this.renderer.rotateModel(params)
   }
 
-  public updateModelScale = (value: number, index: number) => {
-    const newScale = [...this.store.relativelyScale]
-    newScale[index] = value
+  public updateModelScale = (params: { x?: number; y?: number; z?: number }) => {
+    const newScale: number[] = [...this.store.relativelyScale]
+
+    const updateScale = (value: number, index: number) => {
+      if (value > SCALE_MAX) {
+        newScale[index] = SCALE_MAX
+      } else if (value < SCALE_MIN) {
+        newScale[index] = SCALE_MIN
+      } else {
+        newScale[index] = value
+      }
+    }
+
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined) {
+        switch (key) {
+          case 'x':
+            updateScale(value, 0)
+            break
+          case 'y':
+            updateScale(value, 1)
+            break
+          case 'z':
+            updateScale(value, 2)
+            break
+        }
+      }
+    })
+
     this.store.setRelativelyScale(newScale)
-    this.renderer.scaleModel(value, index)
+    this.renderer.scaleModel(params)
   }
+
   public resetModel = () => {
     this.store.setModelPosition(new Array(3).fill(parseFloat(this.store.subjectInits[0])))
     this.store.setModelRotation(new Array(3).fill(parseFloat(this.store.subjectInits[1])))
     this.store.setRelativelyScale(new Array(3).fill(parseFloat(this.store.subjectInits[2])))
     this.store.setOverallScale(new Array(1).fill(parseFloat(this.store.overallInits[0])))
+    this.store.setBaseColor(BASE_DEFAULT_COLOR)
     this.renderer.resetModel()
   }
   public resetUndo = (
     prePosition: number[],
     preRotation: number[],
     preScale: number[],
-    preScaleOverall: number[]
+    preScaleOverall: number[],
+    preBaseColor: string
   ) => {
     this.store.setModelPosition(prePosition)
     this.store.setModelRotation(preRotation)
     this.store.setRelativelyScale(preScale)
     this.store.setOverallScale(preScaleOverall)
-    this.renderer.resetUndo(prePosition, preRotation, preScale, preScaleOverall)
+    this.store.setBaseColor(preBaseColor)
+    this.renderer.resetUndo(prePosition, preRotation, preScale, preScaleOverall, preBaseColor)
   }
   public lockedScale = (scale: number) => {
     this.store.setOverallScale([scale])
@@ -363,6 +482,7 @@ export class Controller {
 ```ts
 import { useGlobalStore } from '@src/stores/globalStore'
 import { Controller } from '../Controller'
+import { useEditorStore } from '@src/stores/editorStore'
 export interface ICommand {
   execute(): void | Promise<void>
   undo(): void | Promise<void>
@@ -371,6 +491,10 @@ export interface ICommand {
 export function getController(): Controller | undefined {
   const { controller } = useGlobalStore.getState()
   return controller
+}
+
+export function getEditStore() {
+  return useEditorStore.getState()
 }
 
 ```

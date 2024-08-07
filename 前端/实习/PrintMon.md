@@ -625,3 +625,180 @@ export default InputItem
 
 ```
 
+
+
+### 弹窗
+
+`mui`的`Dialog`在其`open`为true的时候会自动显示在页面的中央，自动创建一个paper来装载内容，可以用`PaperProps`来修改这个paper的样式，下面是一个演示组件
+
+
+
+![8](D:\note\前端\实习\src\8.png)
+
+
+
+设置为absolute的子元素会脱离文档流，不会占用同级元素的名额
+
+```tsx
+import { Dialog } from '@mui/material'
+import { Close } from '@src/assets/icons/Close'
+import { t } from 'i18next'
+import React from 'react'
+
+type PreviewLoadingComponentProps = {
+  style?: React.CSSProperties
+  downLoadingOpen: boolean
+  setDownLoadingOpen: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+const DownLoading: React.FC<PreviewLoadingComponentProps> = ({
+  style,
+  downLoadingOpen,
+  setDownLoadingOpen,
+}) => {
+  const handleClose = () => {
+    setDownLoadingOpen(false)
+  }
+  return (
+    <Dialog
+      open={downLoadingOpen}
+      id="downloading-dialog"
+      maxWidth={false}
+      aria-describedby="alert-dialog-description"
+      PaperProps={{
+        style: {
+          width: 800,
+          height: 644,
+          position: 'relative',
+          borderRadius: 16,
+        },
+      }}
+    >
+      <Close
+        style={{
+          position: 'absolute',
+          right: '3%',
+          top: '3%',
+          cursor: 'pointer',
+        }}
+        onClick={handleClose}
+      />
+      <div
+        style={{
+          width: 640,
+          height: 480,
+          backgroundColor: '#ebebeb',
+          margin: '76px 80px 88px',
+        }}
+      ></div>
+      <p
+        style={{
+          position: 'absolute',
+          bottom: '5%',
+          fontSize: 16,
+          textAlign: 'center',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          color: '#333',
+          fontWeight: 600,
+          padding: 0,
+          margin: 0,
+        }}
+      >
+        {t('download:loading')}
+      </p>
+    </Dialog>
+  )
+}
+
+export default DownLoading
+
+```
+
+### 
+
+### 复制板
+
+对p标签设置ref ` const textRef = useRef<HTMLParagraphElement>(null)`
+
+利用JavaScript提供的API做复制函数
+
+```tsx
+  const handleCopy = () => {
+    if (textRef.current) {
+      const textToCopy = textRef.current.innerText
+      navigator.clipboard
+        .writeText(textToCopy)
+        .then(() => {
+          setOpen(true)
+        })
+        .catch((err) => {
+          console.error('Failed to copy text: ', err)
+        })
+    }
+  }
+```
+
+
+
+利用mui的`Snackbar`做复制成功的提示
+
+```tsx
+  const handleSnackbarClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setOpen(false)
+  }      
+	<Snackbar
+        open={open}
+        autoHideDuration={1500}
+        onClose={handleSnackbarClose}
+        message="Text copied to clipboard"
+    />
+```
+
+
+
+![9](D:\note\前端\实习\src\9.png)
+
+
+
+### 循环播放视频
+
+视频在弹窗窗口中，ref在弹窗出来之前没被挂上，所以一个useEffect不够，需要多一个useEffect监听弹出的出现
+
+```tsx
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [currentVideoIndex, setCurrentVideoIndex] = useState<number>(-1)
+  useEffect(() => {
+    if (downLoadingOpen) {
+      setCurrentVideoIndex(0)
+    }
+  }, [downLoadingOpen])
+  useEffect(() => {
+    const videoElement = videoRef.current
+    const handleVideoEnded = () => {
+      setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % downloadingViedo.length)
+    }
+
+    if (videoElement) {
+      videoElement.addEventListener('ended', handleVideoEnded)
+      videoElement.load()
+      videoElement.muted = true
+      videoElement.play()
+    }
+
+    return () => {
+      if (videoElement) {
+        videoElement.removeEventListener('ended', handleVideoEnded)
+      }
+    }
+  }, [currentVideoIndex])
+
+        <video ref={videoRef} width="640" height="480" controls autoPlay muted>
+          <source src={downloadingViedo[currentVideoIndex]} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+```
+

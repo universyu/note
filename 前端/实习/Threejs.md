@@ -34,51 +34,79 @@
 **构造凸包（以THREE.Group为例）**
 
 ```tsx
-        const vertices: THREE.Vector3[] = []
-        object.traverse((child) => {
-          if (child instanceof THREE.Mesh && child.geometry) {
-            const positionAttribute = child.geometry.attributes.position
-            for (let i = 0; i < positionAttribute.count; i++) {
-              const vertex = new THREE.Vector3()
-              vertex.fromBufferAttribute(positionAttribute, i)
-              vertices.push(vertex)
-            }
-          }
-        })
-        const geometry = new ConvexGeometry(vertices)
-        this.convexHull = new THREE.Mesh(geometry)
-        this.convexHull.matrixAutoUpdate = false
-        object.updateMatrix()
-        this.convexHull.matrix = object.matrix.clone()
+export function createConvexHull(object: THREE.Object3D | THREE.Mesh): THREE.Mesh {
+  const vertices: THREE.Vector3[] = []
+
+  function collectVerticesFromGeometry(geometry: THREE.BufferGeometry) {
+    const positionAttribute = geometry.attributes.position
+    for (let i = 0; i < positionAttribute.count; i++) {
+      const vertex = new THREE.Vector3()
+      vertex.fromBufferAttribute(positionAttribute, i)
+      vertices.push(vertex)
+    }
+  }
+
+  if (object instanceof THREE.Mesh && object.geometry) {
+    collectVerticesFromGeometry(object.geometry)
+  } else {
+    object.traverse((child) => {
+      if (child instanceof THREE.Mesh && child.geometry) {
+        collectVerticesFromGeometry(child.geometry)
+      }
+    })
+  }
+
+  const geometry = new ConvexGeometry(vertices)
+  return new THREE.Mesh(geometry)
+}
 ```
 
 **根据凸包找到最小坐标**
 
 ```tsx
-  private findMinZ(minZ = Infinity) {
-    const positionAttribute = this.convexHull.geometry.attributes.position
-    for (let i = 0; i < positionAttribute.count; i++) {
-      const vertex = new THREE.Vector3()
-      vertex.fromBufferAttribute(positionAttribute, i)
-      vertex.applyMatrix4(this.convexHull.matrix)
-      if (vertex.z < minZ) {
-        minZ = vertex.z
-      }
+export function findMinZ(mesh: THREE.Mesh, minZ = Infinity): number {
+  const positionAttribute = mesh.geometry.attributes.position
+  for (let i = 0; i < positionAttribute.count; i++) {
+    const vertex = new THREE.Vector3()
+    vertex.fromBufferAttribute(positionAttribute, i)
+    vertex.applyMatrix4(mesh.matrix)
+
+    if (vertex.z < minZ) {
+      minZ = vertex.z
     }
-    return minZ
   }
+  return minZ
+}
 ```
 
 **更新模型后更新位置**
 
 ```tsx
-//首先更新凸包
+  public moveModel(params: { x?: number; y?: number; z?: number }) {
+    const { x, y, z } = params
+    if (this.object) {
+      if (x !== undefined) this.object.position.x = x
+      if (y !== undefined) this.object.position.y = y
+      if (z !== undefined) this.offsetZ = z
+	//更新凸包
       this.object.updateMatrixWorld()
       this.convexHull.matrix = this.object.matrix.clone()
-//然后更新位置
       if (this.baseModel) {
-        this.baseBox.setFromObject(this.baseModel)
-        this.object.position.z -= this.findMinZ() - this.baseBox.max.z
+	//贴合底座
+        this.object.position.z -=
+          findMinZ(this.convexHull) - findMaxZ(this.baseConvexHubll) + this.offsetZ
+    //更新凸包，并重求范围限制
+        this.object.updateMatrixWorld()
+        this.convexHull.matrix = this.object.matrix.clone()
+        this.positionLimits = findRangeBounds(
+          this.convexHull,
+          this.baseConvexHubll,
+          this.object.position.x,
+          this.object.position.y
+        )
+        this.store.setPositionLimits(this.positionLimits)
       }
+    }
+  }
 ```
 
