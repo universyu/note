@@ -8,4 +8,10 @@
 
 ####  absolute
 
-设定为`position:absolute`后设置`left`和`right`都为零就可以让它铺满整个父级
+设定为`position:absolute`后设置`left`和`right`都为零就可以让它铺满整个父级，设置`absolute`之后一些属性会失效，比如`justifyContent: 'flex-end'`
+
+
+
+#### maxHeight
+
+使用mui时，遇到设置尺寸失效需要设置maxHeight和maxWidth

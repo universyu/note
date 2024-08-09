@@ -802,3 +802,9 @@ export default DownLoading
         </video>
 ```
 
+
+
+### flex排版
+
+父标签为`flex`，两个子标签，第一个`flex:1`第二个`display: flex, justifyContent: 'flex-end'`可以实现第二个子标签处于父标签的最底层，如果第一个子标签是可以`scroll`的，那么还需要为其加上`minHeight:0`
+
