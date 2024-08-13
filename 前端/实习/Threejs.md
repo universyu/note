@@ -143,3 +143,48 @@ export function makeBaseConvexHull(mesh: THREE.Mesh, surfaceZ: number): THREE.Ve
 }
 ```
 
+
+
+### 更新canvas大小
+
+`ThreeJsRenderer.ts`
+
+```ts
+  private fxaaPass: ShaderPass
+  
+  private setupPostEffect(width: number, height: number) {
+    this.composer = new EffectComposer(this.renderer)
+
+    const renderPass = new RenderPass(this.scene, this.camera)
+    this.composer.addPass(renderPass)
+    this.outlinePass = new OutlinePass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      this.scene,
+      this.camera
+    )
+    this.outlinePass.edgeStrength = 7
+    this.outlinePass.edgeGlow = 0.6
+    this.outlinePass.edgeThickness = 2.0
+    this.outlinePass.pulsePeriod = 1.5
+    this.outlinePass.visibleEdgeColor.set('#ffffff')
+    this.outlinePass.hiddenEdgeColor.set('#ffffff')
+    this.composer.addPass(this.outlinePass)
+    const outputPass = new OutputPass()
+    this.composer.addPass(outputPass)
+    this.fxaaPass = new ShaderPass(FXAAShader)
+    const pixelRatio = this.renderer.getPixelRatio()
+    this.fxaaPass.material.uniforms['resolution'].value.x = 1 / (width * pixelRatio)
+    this.fxaaPass.material.uniforms['resolution'].value.y = 1 / (height * pixelRatio)
+    this.composer.addPass(this.fxaaPass)
+  }
+
+  public onCanvasResize() {
+    const { width, height } = this.canvas.getBoundingClientRect()
+    this.camera.aspect = width / height
+    this.camera.updateProjectionMatrix()
+    this.renderer.setSize(width, height, false)
+    this.composer.setSize(width, height)
+    this.fxaaPass.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight)
+  }
+```
+

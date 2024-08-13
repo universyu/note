@@ -76,3 +76,9 @@ commit使用尾插法
 ## git tag
 
 `git tag v0 c1`为c1这个commit记录打上标记v0
+
+
+
+## git fetch
+
+获取远端最新状态

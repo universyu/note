@@ -20,8 +20,8 @@
 - 限制范围在最大值和最小值之间
 
 ```tsx
- const parseAndValidateValue = (): number => {
-    let valNum = parseFloat(parseFloat(value).toFixed(1))
+  const parseAndValidateValue = (): number => {
+    let valNum = Math.trunc(parseFloat(value) * 10) / 10
     if (valNum > maxV) valNum = maxV
     else if (valNum < minV) valNum = minV
     return valNum
@@ -87,7 +87,7 @@
 拖动的时候直接触发`controller`的函数
 
 ```tsx
-const backupValues = useRef<number[]>([1, 1, 1])
+  const backupValues = useRef<number[]>([1, 1, 1])
   const backupVal = useRef<string>(init)
   const lastCall = useRef<number>(0)
   const handleDrag = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,7 +100,7 @@ const backupValues = useRef<number[]>([1, 1, 1])
       const proportion = parseFloat(e.target.value) / backupValues.current[index]
       const newDependencies = backupValues.current.map((item) => {
         const multipliedValue = item * proportion
-        return parseFloat(multipliedValue.toFixed(1))
+        return Math.trunc(multipliedValue * 10) / 10
       })
       const dragingFn = draging as (values: number[]) => void
       dragingFn(newDependencies)
@@ -110,7 +110,6 @@ const backupValues = useRef<number[]>([1, 1, 1])
     }
     lastCall.current = curCall
   }
-
 ```
 
 `onMouseUp`直接发`Command`，`Command`会改变全局变量，然后会被上面的`useEffect`检测并修改输入框的值

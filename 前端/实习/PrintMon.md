@@ -904,3 +904,20 @@ export function findUpperSurfaceBounds(
 ### 传参式Class
 
 通过参数决定属性，以此构造通用型Class
+
+
+
+### 显示照片
+
+对于img标签，如果设置样式
+
+```tsx
+        style={{
+          position: 'absolute',
+          width: '100%',
+          height: '100%',
+          objectFit: 'contain',
+        }}
+```
+
+那么图片会原样显示，但是img标签内部可能会留有白边，如果是`objectFit:'cover'`那么会缩放图片使其布满img
