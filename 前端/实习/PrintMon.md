@@ -808,3 +808,99 @@ export default DownLoading
 
 父标签为`flex`，两个子标签，第一个`flex:1`第二个`display: flex, justifyContent: 'flex-end'`可以实现第二个子标签处于父标签的最底层，如果第一个子标签是可以`scroll`的，那么还需要为其加上`minHeight:0`
 
+
+
+### 相对位移范围
+
+由于3D的位置是调中心点的`position`，真正的X范围应该是底座最小X和最大X分别减去模型最低点的X得到偏差，然后转移到中心点position，也就是要加上触发位置改变之前的模型的position的x
+
+在求范围时，为了防止边缘旋转移飞出去，需要加上Infinity的判断
+
+```ts
+export function findRangeBounds(
+  convexHull: THREE.Mesh,
+  baseConvexHull: THREE.Vector3[],
+  surfaceZ: number,
+  offsetX: number,
+  offsetY: number
+): [minX: number, maxX: number, minY: number, maxY: number, minZ: number, maxZ: number] {
+  const lowestPoint = findMinZPoint(convexHull)
+  const surfaceBounds = findUpperSurfaceBounds(baseConvexHull, lowestPoint)
+  const minX = parseFloat((surfaceBounds.minX + offsetX).toFixed(1))
+  const maxX = parseFloat((surfaceBounds.maxX + offsetX).toFixed(1))
+  const minY = parseFloat((surfaceBounds.minY + offsetY).toFixed(1))
+  const maxY = parseFloat((surfaceBounds.maxY + offsetY).toFixed(1))
+  const maxZ = parseFloat(surfaceZ.toFixed(1)) - 0.1
+  return [minX, maxX, minY, maxY, 0, maxZ]
+}
+
+
+export function findUpperSurfaceBounds(
+  baseConvexHull: THREE.Vector3[],
+  lowestPoint: THREE.Vector3
+): {
+  minX: number
+  maxX: number
+  minY: number
+  maxY: number
+} {
+  let minX = Infinity
+  let maxX = -Infinity
+  let minY = Infinity
+  let maxY = -Infinity
+
+  const pX = lowestPoint.x
+  const pY = lowestPoint.y
+  for (let i = 0; i < baseConvexHull.length; i++) {
+    const p1 = baseConvexHull[i]
+    const p2 = baseConvexHull[(i + 1) % baseConvexHull.length]
+    if ((pX >= p2.x && pX <= p1.x) || (pX >= p1.x && pX <= p2.x)) {
+      const slope1 = (p2.y - p1.y) / (p2.x - p1.x)
+      const y = p2.y + (pX - p2.x) * slope1
+      if (y < minY) {
+        minY = y
+      }
+      if (y > maxY) {
+        maxY = y
+      }
+    }
+    if ((pY >= p2.y && pY <= p1.y) || (pY >= p1.y && pY <= p2.y)) {
+      const slope2 = (p2.x - p1.x) / (p2.y - p1.y)
+      const x = p2.x + (pY - p2.y) * slope2
+      if (x < minX) {
+        minX = x
+      }
+      if (x > maxX) {
+        maxX = x
+      }
+    }
+  }
+  if (minX === Infinity) {
+    minX = lowestPoint.x
+  } else {
+    minX -= lowestPoint.x
+  }
+  if (maxX === -Infinity) {
+    maxX = lowestPoint.x
+  } else {
+    maxX -= lowestPoint.x
+  }
+  if (minY === Infinity) {
+    minY = lowestPoint.y
+  } else {
+    minY -= lowestPoint.y
+  }
+  if (maxY === -Infinity) {
+    maxY = lowestPoint.y
+  } else {
+    maxY -= lowestPoint.y
+  }
+  return { minX, maxX, minY, maxY }
+}
+```
+
+
+
+### 传参式Class
+
+通过参数决定属性，以此构造通用型Class

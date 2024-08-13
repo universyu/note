@@ -64,7 +64,10 @@ export function createConvexHull(object: THREE.Object3D | THREE.Mesh): THREE.Mes
 **根据凸包找到最小坐标**
 
 ```tsx
-export function findMinZ(mesh: THREE.Mesh, minZ = Infinity): number {
+export function findMinZPoint(mesh: THREE.Mesh): THREE.Vector3 {
+  let minZ = Infinity
+  const minZPoint = new THREE.Vector3()
+
   const positionAttribute = mesh.geometry.attributes.position
   for (let i = 0; i < positionAttribute.count; i++) {
     const vertex = new THREE.Vector3()
@@ -73,40 +76,70 @@ export function findMinZ(mesh: THREE.Mesh, minZ = Infinity): number {
 
     if (vertex.z < minZ) {
       minZ = vertex.z
+      minZPoint.copy(vertex)
     }
   }
-  return minZ
+  return minZPoint
 }
 ```
 
-**更新模型后更新位置**
 
-```tsx
-  public moveModel(params: { x?: number; y?: number; z?: number }) {
-    const { x, y, z } = params
-    if (this.object) {
-      if (x !== undefined) this.object.position.x = x
-      if (y !== undefined) this.object.position.y = y
-      if (z !== undefined) this.offsetZ = z
-	//更新凸包
-      this.object.updateMatrixWorld()
-      this.convexHull.matrix = this.object.matrix.clone()
-      if (this.baseModel) {
-	//贴合底座
-        this.object.position.z -=
-          findMinZ(this.convexHull) - findMaxZ(this.baseConvexHubll) + this.offsetZ
-    //更新凸包，并重求范围限制
-        this.object.updateMatrixWorld()
-        this.convexHull.matrix = this.object.matrix.clone()
-        this.positionLimits = findRangeBounds(
-          this.convexHull,
-          this.baseConvexHubll,
-          this.object.position.x,
-          this.object.position.y
-        )
-        this.store.setPositionLimits(this.positionLimits)
-      }
-    }
+
+### 凸包算法
+
+无论是顶点还是凸包都无法完全表示上表面，为了找到准确的上表面范围，需要利用上表面的顶点构造出凸包
+
+```ts
+export function makeBaseConvexHull(mesh: THREE.Mesh, surfaceZ: number): THREE.Vector3[] {
+  const positionAttribute = mesh.geometry.attributes.position
+  const vertices: THREE.Vector3[] = []
+  for (let i = 0; i < positionAttribute.count; i++) {
+    const vertex = new THREE.Vector3()
+    vertex.fromBufferAttribute(positionAttribute, i)
+    vertex.applyMatrix4(mesh.matrix)
+    vertices.push(vertex)
   }
+  const upperSurfaceVertices = vertices.filter((vertex) => Math.trunc(surfaceZ) < vertex.z)
+
+  upperSurfaceVertices.sort((a, b) => {
+    if (a.x !== b.x) return a.x - b.x
+    return a.y - b.y
+  })
+
+  // Andrew's algorithm implementation
+  const lowerHull: THREE.Vector3[] = []
+  const upperHull: THREE.Vector3[] = []
+
+  function isLeftTurn(a: THREE.Vector3, b: THREE.Vector3, c: THREE.Vector3): boolean {
+    return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x) > 0
+  }
+
+  for (const vertex of upperSurfaceVertices) {
+    while (
+      lowerHull.length >= 2 &&
+      !isLeftTurn(lowerHull[lowerHull.length - 2], lowerHull[lowerHull.length - 1], vertex)
+    ) {
+      lowerHull.pop()
+    }
+    lowerHull.push(vertex)
+  }
+
+  // Build upper hull
+  for (let i = upperSurfaceVertices.length - 1; i >= 0; i--) {
+    const vertex = upperSurfaceVertices[i]
+    while (
+      upperHull.length >= 2 &&
+      !isLeftTurn(upperHull[upperHull.length - 2], upperHull[upperHull.length - 1], vertex)
+    ) {
+      upperHull.pop()
+    }
+    upperHull.push(vertex)
+  }
+
+  // Combine lower and upper hulls
+  const convexHull = [...lowerHull, ...upperHull.slice(1, -1)]
+
+  return convexHull
+}
 ```
 
