@@ -188,3 +188,51 @@ export function makeBaseConvexHull(mesh: THREE.Mesh, surfaceZ: number): THREE.Ve
   }
 ```
 
+
+
+### group
+
+利用group可以包裹模型和底座，一起做scale操作。
+
+```ts
+//constructor里面setup
+  private overallGroup: THREE.Group = new THREE.Group()
+  private setupOverallGroup() {
+    this.scene.add(this.overallGroup)
+    this.overallGroup.matrixAutoUpdate = false
+    this.overallGroup.updateMatrix()
+  }
+```
+
+加载完模型或者底座之后，在group里面add对应的模型，然后更新
+
+```ts
+  private updateOverallGroup(edit?: boolean, modelTransform?: boolean) {
+    this.overallGroup.updateMatrix()
+    this.overallBox.setFromObject(this.overallGroup)
+    const newSize = new THREE.Vector3()
+    this.overallBox.getSize(newSize)
+     //外界调用lockedScale的时候不需要改变这个原始缩放比
+    if (!edit) {
+      this.store.setOverallScaleFactor([newSize.x, newSize.y, newSize.z])
+    }
+     //内部move、rotate等操作时需要改变原始缩放比
+    if (modelTransform) {
+      const ratio = this.store.overallScale[0]
+      newSize.divideScalar(ratio)
+      this.store.setOverallScaleFactor([newSize.x, newSize.y, newSize.z])
+    }
+  }
+```
+
+
+
+```ts
+  public lockedScale(scale: number, edit?: boolean) {
+    if (this.object) {
+      this.overallGroup.scale.set(scale, scale, scale)
+      this.updateOverallGroup(edit)
+    }
+  }
+```
+

@@ -921,3 +921,36 @@ export function findUpperSurfaceBounds(
 ```
 
 那么图片会原样显示，但是img标签内部可能会留有白边，如果是`objectFit:'cover'`那么会缩放图片使其布满img
+
+
+
+### useEffect异步
+
+```tsx
+  useEffect(() => {
+    const fetchData = async () => {
+      if (currentStage === EPrintMonStage.RodinProgress) {
+        await handleGenerate()
+      }
+    }
+    fetchData()
+  }, [])
+```
+
+
+
+### 大小自适应
+
+为了防止写死的大小在不同尺寸的平面上表现有问题，可以用`flex:1`
+
+### 显示和实际存值不同的输入框
+
+将缩放比例映射到实际大小，显示的值乘以缩放比例，所以改值的时候也需要除以缩放比例
+
+```tsx
+        onChange={(e) => {
+          setValue(String(parseFloat(e.target.value) / scaleFactor))
+        }}
+        value={String(Math.round(parseFloat(value) * scaleFactor * 10) / 10)}
+```
+
