@@ -236,3 +236,37 @@ export function makeBaseConvexHull(mesh: THREE.Mesh, surfaceZ: number): THREE.Ve
   }
 ```
 
+
+
+### transformControl
+
+构造时第一个参数是相机，第二个是需要监听的html对象
+
+```ts
+      this.transformControls = new TransformControls(this.camera,this.canvas)
+      this.scene.add(this.transformControls)
+    // controls变化的时候更新场景
+      this.transformControls.addEventListener('change', this.render.bind(this))
+   // 拖拽时（event.value为true）关掉自己的controls，防止和transformControls冲突
+      this.transformControls.addEventListener('dragging-changed', (event) => {
+        this.controls.enabled = !event.value
+      })
+```
+
+显示和隐藏controls
+
+```ts
+  public showTransformControls() {
+    if (this.transformControls) {
+      this.transformControls.attach(this.object)
+      this.transformControls.visible = true
+    }
+  }
+  public hideTransformControls() {
+    if (this.transformControls) {
+      this.transformControls.visible = false
+      this.transformControls.detach()
+    }
+  }
+```
+
