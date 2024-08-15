@@ -426,6 +426,18 @@ const TextInput: React.FC<TextInputComponentProps> = ({ style, props }) => {
 
 
 
+### 常量组
+
+```ts
+export enum ETransform {
+  position = 'position',
+  rotation = 'rotation',
+  scale = 'scale',
+}
+```
+
+使用时只需要调用`ETransform.position`
+
 ### mui菜单栏
 
 #### styled
@@ -458,6 +470,10 @@ const StepButton = styled(ToggleButton)(({ theme }) => ({
 `exclusive`表示只能有一个按钮被选中，`value`是选择不同的按钮所代表的变量，每次选择按钮就会触发`onChange`
 
 ```tsx
+  const onStepChange = (event: React.MouseEvent<HTMLElement> | null, value: EditorStep) => {
+    if (value !== null && value !== undefined ) setStep(value) //防止点击同一个按钮导致bug
+  }
+
 <ToggleButtonGroup orientation="vertical" exclusive value={step} onChange={onStepChange}>
         <StepButton value={EditorStep.EYES} key="one">
           <StepEyes /> //这是一个Icon
@@ -952,5 +968,23 @@ export function findUpperSurfaceBounds(
           setValue(String(parseFloat(e.target.value) / scaleFactor))
         }}
         value={String(Math.round(parseFloat(value) * scaleFactor * 10) / 10)}
+```
+
+
+
+### 代替alert的提示
+
+![10](D:\note\前端\实习\src\10.png)
+
+
+
+```tsx
+	  import { useSnackbar } from 'notistack'
+	 //横纵在中间，纵轴在顶部，显示两秒的警示
+      enqueueSnackbar('File size is too large. Please upload a file less than 10MB.', {
+        variant: 'error',
+        anchorOrigin: { horizontal: 'center', vertical: 'top' },
+        autoHideDuration: 2000,
+      })
 ```
 

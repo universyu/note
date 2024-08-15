@@ -1,5 +1,92 @@
 # Threejs
 
+### 构造ThreeJsRenderer
+
+构造场景
+
+```ts
+type Props = {
+  canvas: HTMLCanvasElement
+    ...
+}
+
+class ThreeJsRenderer {
+    private canvas: HTMLCanvasElement
+    ...
+    constructor({canvas, ...} : Props){
+    	this.canvas = canvas
+    	const { width, height } = this.canvas.getBoundingClientRect()
+        //后面两个参数分别表示：允许背景透明、开启抗锯齿
+    	this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, alpha: true, antialias: true })
+    	//关闭对canva标签的宽高影响，否则UI将改不到canvas的宽高
+    	this.renderer.setSize(width, height, false) 
+		//使用现代化光源
+	    this.renderer.useLegacyLights = false 
+    	this.scene = new THREE.Scene()
+    	this.scene.background = new THREE.Color(0xebebeb)
+        
+    }
+}
+```
+
+构造相机
+
+```ts
+//相机可视角大小为75度，宽高比和canvas的一致，可渲染的距离：最近0.5 最远1000
+this.camera = new THREE.PerspectiveCamera(75, width / height, 0.5, 1000) 
+this.camera.position.set(...)
+//如果设置为0,0,1 那么按着右键向上移动的时候相机会向着z轴正方向移动                         
+this.camera.up.set(...)
+this.controls = new OrbitControls(this.camera, this.canvas)
+//如果const DefaultCameraLookAt = new THREE.Vector3(0, 0, 0)那么场景旋转中心点为原点
+this.controls.target = DefaultCameraLookAt
+this.controls.update()
+```
+
+构造grid
+
+```ts
+    //大小是XZ轴256*256
+	const X1Grid = new THREE.GridHelper(256, 32, 0x666666, 0x666666)
+    X1Grid.position.set(0, 0, 0)
+	//翻到XY平面
+    X1Grid.rotation.set(-Math.PI / 2, 0, 0)
+    this.scene.add(X1Grid)
+```
+
+构造灯光
+
+```ts
+    const ambientLight = new THREE.AmbientLight(0x888888)
+    this.scene.add(ambientLight)
+    const hemisphereLight = new THREE.HemisphereLight(0x8d7c7c, 0x494966)
+    this.scene.add(hemisphereLight)
+    const pointLight1 = new THREE.PointLight(0xffffff, 2, 0, 0)
+    pointLight1.position.set(50, -25, 5)
+    this.scene.add(pointLight1)
+    const pointLight2 = new THREE.PointLight(0xffffff, 2, 0, 0)
+    pointLight2.position.set(-50, -25, 5)
+    this.scene.add(pointLight2)
+```
+
+
+
+### 使用ThreeJsRenderer
+
+用ref取定一个canvas就可以了
+
+```tsx
+    <canvas	ref={canvasRef}/>
+```
+
+
+
+```tsx
+const renderer = new ThreeJsRenderer(canvas: canvasRef.current)
+```
+
+
+
 ### 模型实际底部
 
 利用`Box`计算时会有很大的偏差，遍历每一个顶点可以找到实际坐标最小值，下面的程序用来找到`THREE.Object3D `的最小z
@@ -186,6 +273,24 @@ export function makeBaseConvexHull(mesh: THREE.Mesh, surfaceZ: number): THREE.Ve
     this.composer.setSize(width, height)
     this.fxaaPass.uniforms['resolution'].value.set(1 / window.innerWidth, 1 / window.innerHeight)
   }
+```
+
+在contructor里面对canvas监听大小变化，这里的entries里面只有canvas这一个html标签
+
+```ts
+    this.debouncedResize = debounce((size: { width: number; height: number }) => {
+      this.onCanvasResize(size)
+    }, 50)
+    // Add ResizeObserver
+    this.resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect
+        this.debouncedResize({ width, height })
+      }
+    })
+
+    // Start observing the canvas
+    this.resizeObserver.observe(this.canvas)
 ```
 
 
