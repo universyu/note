@@ -193,129 +193,6 @@ left: 0;
 
 
 
-### Dialog
-
-`Dialog`标签会出现在和`id=root`的`div`同一级
-
-![3](src/3.png)
-
-**示例代码**
-
-```tsx
-      <Dialog
-        open={confirmOpen}
-        id="preview-dialog"
-        sx={{
-          backgroundColor: "rgb(94, 94, 94, 0.3)",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "100%",
-          height: "100%",
-        }}
-      >
-        <div
-          style={{
-            width: "480px",
-            height: "296px",
-            boxSizing: "border-box",
-            borderRadius: "16px",
-          }}
-        >
-          <IconButton
-            aria-label="close"
-            sx={{
-              position: "absolute",
-              right: 8,
-              top: 5,
-              color: (theme) => theme.palette.grey[500],
-            }}
-            onClick={() => {
-              setConfirmOpen(false);
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-
-          <DialogContent>
-            <Typography
-              style={{
-                fontSize: "20px",
-                fontWeight: "700",
-                lineHeight: "28px",
-                textAlign: "center",
-                marginBottom: 35,
-              }}
-            >
-              Confirm Generate?
-            </Typography>
-            <p
-              style={{
-                fontSize: "14px",
-                fontWeight: "400",
-                lineHeight: "22px",
-              }}
-            >
-              You still have <strong>5</strong> generate credits remaining, and
-              this generate will consume one of your credits. You can redeem
-              credits using your points.
-            </p>
-            <a
-              href="#"
-              style={{
-                fontSize: "14px",
-                fontWeight: "400",
-                lineHeight: "22px",
-                color: "#00AE42",
-              }}
-            >
-              Go to Redemption
-            </a>
-          </DialogContent>
-
-          <Button
-            color="inherit"
-            variant="contained"
-            onClick={() => {
-              setConfirmOpen(false);
-            }}
-            sx={{ textTransform: "none" }}
-            style={{
-              width: 144,
-              height: 48,
-              borderRadius: "8px",
-              padding: "12px 16px 12px 16px",
-              margin: "0 24px",
-              fontWeight: 700,
-              fontSize: "16px",
-              lineHeight: "24px",
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleGenerate}
-            sx={{ textTransform: "none" }}
-            style={{
-              width: 240,
-              height: 48,
-              borderRadius: "8px",
-              padding: "12px 16px 12px 16px",
-              fontWeight: 700,
-              fontSize: "16px",
-              lineHeight: "24px",
-              backgroundColor: "#00AE42",
-            }}
-          >
-            Continue Generating
-          </Button>
-        </div>
-      </Dialog>
-```
-
-
-
 
 
 ### css加载动画
@@ -643,95 +520,87 @@ export default InputItem
 
 
 
-### 弹窗
+### 弹窗Dialog
 
-`mui`的`Dialog`在其`open`为true的时候会自动显示在页面的中央，自动创建一个paper来装载内容，可以用`PaperProps`来修改这个paper的样式，下面是一个演示组件
+`Dialog`标签会出现在和`id=root`的`div`同一级，大小铺满整个屏幕。自动创建一个paper来装载内容，这个paper自动处于屏幕中央，可以用`PaperProps`来修改这个paper的样式。这个paper默认为`relative、flex-column`。如果希望大小自适应，就把paper的宽高写死，然后把里面的希望自适应的标签写成min、maxHeight和flex:1。  下面是一个演示组件
 
+![11](D:\note\前端\实习\src\11.png)
 
-
-![8](D:\note\前端\实习\src\8.png)
-
-
-
-设置为absolute的子元素会脱离文档流，不会占用同级元素的名额
+为title设置一个高度确保把后面的元素顶下去，IconButton的color是点击时的颜色
 
 ```tsx
-import { Dialog } from '@mui/material'
+import { Dialog, DialogTitle, IconButton, styled } from '@mui/material'
 import { Close } from '@src/assets/icons/Close'
+import { usePromptStore } from '@src/stores/promptStore'
 import { t } from 'i18next'
 import React from 'react'
 
-type PreviewLoadingComponentProps = {
+const CenterP = styled('p')(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: '0 40px',
+  margin: 0,
+  fontSize: '16px',
+  fontWeight: 700,
+  lineHeight: '24px',
+}))
+
+type RedemptionProps = {
   style?: React.CSSProperties
-  downLoadingOpen: boolean
-  setDownLoadingOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const DownLoading: React.FC<PreviewLoadingComponentProps> = ({
-  style,
-  downLoadingOpen,
-  setDownLoadingOpen,
-}) => {
-  const handleClose = () => {
-    setDownLoadingOpen(false)
-  }
+const Redemption: React.FC<RedemptionProps> = ({ style }) => {
+  const { redemptionOpen, setRedemptionOpen } = usePromptStore()
   return (
     <Dialog
-      open={downLoadingOpen}
-      id="downloading-dialog"
-      maxWidth={false}
-      aria-describedby="alert-dialog-description"
+      open={redemptionOpen}
+      sx={{
+        backgroundColor: 'rgb(94, 94, 94, 0.3)',
+      }}
       PaperProps={{
         style: {
-          width: 800,
-          height: 644,
-          position: 'relative',
-          borderRadius: 16,
+          width: '480px',
+          height: '456px',
+          boxSizing: 'border-box',
+          borderRadius: '16px',
         },
       }}
     >
-      <Close
+      <DialogTitle
         style={{
-          position: 'absolute',
-          right: '3%',
-          top: '3%',
-          cursor: 'pointer',
-        }}
-        onClick={handleClose}
-      />
-      <div
-        style={{
-          width: 640,
-          height: 480,
-          backgroundColor: '#ebebeb',
-          margin: '76px 80px 88px',
-        }}
-      ></div>
-      <p
-        style={{
-          position: 'absolute',
-          bottom: '5%',
-          fontSize: 16,
-          textAlign: 'center',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          color: '#333',
-          fontWeight: 600,
-          padding: 0,
-          margin: 0,
+          position: 'relative',
+          height: '36px',
+          padding: '0',
         }}
       >
-        {t('download:loading')}
-      </p>
+        <IconButton
+          aria-label="close"
+          sx={{
+            color: (theme) => theme.palette.grey[500],
+            position: 'absolute',
+            right: '8px',
+            '&:hover': {
+              backgroundColor: 'transparent',
+            },
+          }}
+          onClick={() => {
+            setRedemptionOpen(false)
+          }}
+        >
+          <Close />
+        </IconButton>
+      </DialogTitle>
+      <CenterP>{t('prompt:redemption_title')}</CenterP>
     </Dialog>
   )
 }
 
-export default DownLoading
+export default Redemption
 
 ```
 
-### 
+
 
 ### 复制板
 
@@ -988,3 +857,12 @@ export function findUpperSurfaceBounds(
       })
 ```
 
+### a标签不跳转
+
+`       href="javascript:void(0);"`
+
+
+
+### 解决padding导致的位移
+
+`boxSizing: border-box`
