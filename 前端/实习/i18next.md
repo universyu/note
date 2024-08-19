@@ -1,5 +1,7 @@
 # i18next
 
+### vite
+
 导入
 
 ```tsx
@@ -28,4 +30,6 @@ import { I18nextProvider, initReactI18next } from 'react-i18next'
 			...
     </I18nextProvider>
 ```
+
+
 
