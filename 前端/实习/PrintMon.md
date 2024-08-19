@@ -857,12 +857,26 @@ export function findUpperSurfaceBounds(
       })
 ```
 
-### a标签不跳转
+### a标签
+
+**点击不跳转**
 
 `       href="javascript:void(0);"`
+
+**点击自动下载**
+
+```html
+            <a
+              href={userPickImageUrl}
+              download={'printMonSDImage.png'}
+            >
+```
+
+
 
 
 
 ### 解决padding导致的位移
 
 `boxSizing: border-box`
+
