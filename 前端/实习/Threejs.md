@@ -315,6 +315,75 @@ export function makeBaseConvexHull(mesh: THREE.Mesh, surfaceZ: number): THREE.Ve
 
 
 
+### Move逻辑
+
+输入数字直接控制模型的位置，z轴则是控制z偏移量，然后每次控制模型都加上这个偏移量
+
+```ts
+  public moveModel(params: { x?: number; y?: number; z?: number }) {
+    const { x, y, z } = params
+    if (this.object) {
+      if (x !== undefined) this.object.position.x = x
+      if (y !== undefined) this.object.position.y = y
+      if (z !== undefined) this.offsetZ = z
+
+      this.object.updateMatrixWorld()
+      this.convexHull.matrix = this.object.matrix.clone()
+      if (this.baseModel) {
+        this.object.position.z += this.baseTop - findMinZ(this.convexHull) - this.offsetZ
+        this.object.updateMatrixWorld()
+        this.convexHull.matrix = this.object.matrix.clone()
+        this.positionLimits = findRangeBounds(
+          this.convexHull,
+          this.baseConvexHull,
+          this.baseTop,
+          this.object.position.x,
+          this.object.position.y
+        )
+        this.store.setPositionLimits(this.positionLimits)
+      } else {
+        this.object.position.z -= findMinZ(this.convexHull)
+        this.object.updateMatrixWorld()
+        this.convexHull.matrix = this.object.matrix.clone()
+      }
+    }
+    this.updateOverallGroup(true, true)
+  }
+```
+
+
+
+### Rotate逻辑
+
+输入的数字转换成弧度制并加到原始rotation上
+
+```ts
+  public rotateModel(params: { x?: number; y?: number; z?: number }) {
+    const { x, y, z } = params
+    if (this.object) {
+      if (x !== undefined) this.object.rotation.x = x * (Math.PI / 180) + this.originRotation[0]
+      if (y !== undefined) this.object.rotation.z = y * (Math.PI / 180) + this.originRotation[2]
+      if (z !== undefined) this.object.rotation.y = z * (Math.PI / 180) + this.originRotation[1]
+
+      this.object.updateMatrixWorld()
+      this.convexHull.matrix = this.object.matrix.clone()
+      if (this.baseModel) {
+        this.object.position.z += this.baseTop - findMinZ(this.convexHull) - this.offsetZ
+        this.object.updateMatrixWorld()
+        this.convexHull.matrix = this.object.matrix.clone()
+        this.attachModelToBase()
+      } else {
+        this.object.position.z -= findMinZ(this.convexHull)
+        this.object.updateMatrixWorld()
+        this.convexHull.matrix = this.object.matrix.clone()
+      }
+    }
+    this.updateOverallGroup(true, true)
+  }
+```
+
+
+
 ### group
 
 利用group可以包裹模型和底座，一起做scale操作。

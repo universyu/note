@@ -315,6 +315,20 @@ export enum ETransform {
 
 使用时只需要调用`ETransform.position`
 
+
+
+### mui按钮
+
+**Button**
+
+用`variant="contained"`控件按钮的样式
+
+用`color`控制点击时变化的颜色
+
+`style`里面的`color`控制文字的颜色
+
+`style`里面设置`textTransform: 'none'`确保不影响文字的大小写
+
 ### mui菜单栏
 
 #### styled
@@ -827,6 +841,129 @@ export function findUpperSurfaceBounds(
 ### 大小自适应
 
 为了防止写死的大小在不同尺寸的平面上表现有问题，可以用`flex:1`
+
+下面是一个类似Dialog的组件
+
+
+
+```tsx
+<div
+          style={{
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgb(94, 94, 94, 0.3)',
+            zIndex: 3,
+          }}
+        >
+          <div
+            style={{
+              maxWidth: 700,
+              minHeight: 500,
+              maxHeight: 728,
+              flex: 1,
+              borderRadius: 16,
+              border: '1px solid #f2f2f2',
+              boxSizing: 'border-box',
+              backgroundColor: 'white',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: '0 40px ',
+              position: 'relative',
+            }}
+          >
+            <div
+              style={{
+                height: 24,
+                width: '100%',
+                margin: 0,
+              }}
+            >
+              <Close
+                style={{
+                  position: 'absolute',
+                  right: '3%',
+                  top: '3%',
+                  cursor: 'pointer',
+                }}
+                onClick={() => {
+                  setPreviewRodinOpen(false)
+                }}
+              />
+            </div>
+            <p
+              style={{
+                margin: 0,
+                marginBottom: 20,
+                padding: 0,
+                fontSize: 20,
+                fontWeight: 700,
+                lineHeight: '20px',
+              }}
+            >
+              {t('common:model_preview')}
+            </p>
+            <ThreeDeeCanvas
+              style={{
+                maxWidth: 600,
+                minHeight: 0,
+                maxHeight: 500,
+                flex: 1,
+                borderRadius: 16,
+                border: '1px solid #f2f2f2',
+                boxSizing: 'border-box',
+              }}
+              editorContext={editorContext}
+              eyeCarving={false}
+              colorQuantization={false}
+              initStates={false}
+              show={previewRodinOpen}
+            />
+            <div
+              style={{
+                width: '86%',
+                display: 'flex',
+                justifyContent: 'space-between',
+                marginTop: 20,
+                marginBottom: 16,
+              }}
+            >
+              <CommonButton
+                variant="contained"
+                style={{
+                  backgroundColor: '#ebebeb',
+                  color: '#5c5c5c',
+                }}
+              >
+                {t('prompt:retry')}
+              </CommonButton>
+              <CommonButton
+                variant="contained"
+                style={{
+                  backgroundColor: '#00ae42',
+                  color: '#fff',
+                }}
+                onClick={() => {
+                  setCurrentStage(EPrintMonStage.Edit)
+                }}
+              >
+                {t('prompt:confirm')}
+              </CommonButton>
+            </div>
+          </div>
+        </div>
+```
+
+
+
+
+
+
 
 ### 显示和实际存值不同的输入框
 
