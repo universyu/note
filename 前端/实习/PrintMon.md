@@ -317,9 +317,19 @@ export enum ETransform {
 
 
 
-### mui按钮
+### mui选择框Checkbox
 
-**Button**
+![12](D:\note\前端\实习\src\12.png)
+
+`color="success"`可以在选中时表现为绿色
+
+`size="small"`选择小尺寸
+
+`checked={...}`选择控制按钮是否表现为选中状态的变量
+
+`onChange={...}`处理选中、不选中变化的函数
+
+### mui按钮Button
 
 用`variant="contained"`控件按钮的样式
 
