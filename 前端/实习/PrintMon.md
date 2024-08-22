@@ -850,123 +850,103 @@ export function findUpperSurfaceBounds(
 
 ### 大小自适应
 
-为了防止写死的大小在不同尺寸的平面上表现有问题，可以用`flex:1`
+`flex:1`的功能是让标签自动填满父级标签的空白区域
 
-下面是一个类似Dialog的组件
+自适应常用： minHeight、maxHeight、百分比宽高、vh、vw、em
+
+下面是一个自适应大小的弹窗，视频可以flex:1自适应，父标签Paper用vh、vw适应，其他部分写死宽高
+
+position写成`absolute`会以最近的已经定位的标签（也就是设置了position的标签）为基准，它会破坏flex:1
+
+![13](D:\note\前端\实习\src\13.png)
 
 
 
 ```tsx
-<div
+ const NoWhiteSpaceP = styled('p')(({ theme }) => ({
+  textAlign: 'center',
+  padding: 0,
+  margin: 0,
+  whiteSpace: 'nowrap',
+}))
+ 
+ 
+ 
+	<Dialog
+      open={downLoadingOpen}
+      id="downloading-dialog"
+      maxWidth={false}
+      aria-describedby="alert-dialog-description"
+      sx={{
+        backgroundColor: 'rgb(94, 94, 94, 0.3)',
+      }}
+      PaperProps={{
+        style: {
+          width: '50vw',
+          height: '70vh',
+          borderRadius: 16,
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+        },
+      }}
+    >
+      <div
+        style={{
+          width: '100%',
+          margin: 0,
+        }}
+      >
+        <Close
           style={{
-            width: '100%',
-            height: '100%',
+            cursor: 'pointer',
             position: 'absolute',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgb(94, 94, 94, 0.3)',
-            zIndex: 3,
+            top: '2%',
+            right: '2%',
           }}
-        >
-          <div
-            style={{
-              maxWidth: 700,
-              minHeight: 500,
-              maxHeight: 728,
-              flex: 1,
-              borderRadius: 16,
-              border: '1px solid #f2f2f2',
-              boxSizing: 'border-box',
-              backgroundColor: 'white',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: '0 40px ',
-              position: 'relative',
-            }}
-          >
-            <div
-              style={{
-                height: 24,
-                width: '100%',
-                margin: 0,
-              }}
-            >
-              <Close
-                style={{
-                  position: 'absolute',
-                  right: '3%',
-                  top: '3%',
-                  cursor: 'pointer',
-                }}
-                onClick={() => {
-                  setPreviewRodinOpen(false)
-                }}
-              />
-            </div>
-            <p
-              style={{
-                margin: 0,
-                marginBottom: 20,
-                padding: 0,
-                fontSize: 20,
-                fontWeight: 700,
-                lineHeight: '20px',
-              }}
-            >
-              {t('common:model_preview')}
-            </p>
-            <ThreeDeeCanvas
-              style={{
-                maxWidth: 600,
-                minHeight: 0,
-                maxHeight: 500,
-                flex: 1,
-                borderRadius: 16,
-                border: '1px solid #f2f2f2',
-                boxSizing: 'border-box',
-              }}
-              editorContext={editorContext}
-              eyeCarving={false}
-              colorQuantization={false}
-              initStates={false}
-              show={previewRodinOpen}
-            />
-            <div
-              style={{
-                width: '86%',
-                display: 'flex',
-                justifyContent: 'space-between',
-                marginTop: 20,
-                marginBottom: 16,
-              }}
-            >
-              <CommonButton
-                variant="contained"
-                style={{
-                  backgroundColor: '#ebebeb',
-                  color: '#5c5c5c',
-                }}
-              >
-                {t('prompt:retry')}
-              </CommonButton>
-              <CommonButton
-                variant="contained"
-                style={{
-                  backgroundColor: '#00ae42',
-                  color: '#fff',
-                }}
-                onClick={() => {
-                  setCurrentStage(EPrintMonStage.Edit)
-                }}
-              >
-                {t('prompt:confirm')}
-              </CommonButton>
-            </div>
-          </div>
-        </div>
+          onClick={handleClose}
+        />
+      </div>
+
+      <NoWhiteSpaceP
+        style={{
+          fontSize: 16,
+          color: '#333',
+          fontWeight: 600,
+          margin: '1em 0',
+        }}
+      >
+        {t('download:loading')}
+      </NoWhiteSpaceP>
+      <div
+        style={{
+          width: '88%',
+          maxHeight: 480,
+          minHeight: 0,
+          flex: 1,
+          backgroundColor: '#ebebeb',
+          margin: 0,
+        }}
+      >
+        <video ref={videoRef} width="100%" height="100%" autoPlay muted>
+          <source src={DOWNLODING_VIDEO[currentVideoIndex]} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+      <NoWhiteSpaceP
+        style={{
+          fontSize: 12,
+          color: '#5c5c5c',
+          fontWeight: 400,
+          margin: '1em 0',
+        }}
+      >
+        {t(`download:loading_tips_${currentVideoIndex}`)}
+      </NoWhiteSpaceP>
+    </Dialog>
 ```
 
 
