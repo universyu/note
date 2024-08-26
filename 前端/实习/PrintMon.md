@@ -317,6 +317,40 @@ export enum ETransform {
 
 
 
+### mui文本输入框TextField
+
+- fullWidth让其占满宽度
+- multiline表示输入框是多行的
+- variant选择样式
+- color选择选中时的下划线颜色
+- rows设置总行数
+- inputProps设置文字的样式
+
+示例：
+
+```tsx
+      <TextField
+        fullWidth
+        multiline
+        variant="standard"
+        color="success"
+        rows={10}
+        value={textInput}
+        onChange={(e) => setTextInput(e.target.value)}
+        inputProps={{
+          style: {
+            fontSize: "16px",
+            lineHeight: "24px",
+            letterSpacing: "0.1em",
+          },
+        }}
+      />
+```
+
+
+
+
+
 ### mui选择框Checkbox
 
 ![12](D:\note\前端\实习\src\12.png)

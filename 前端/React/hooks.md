@@ -1,4 +1,8 @@
-# 脱围
+# hooks
+
+### state
+
+在循环（比如while）中直接使用hooks不会自动更新值，应该自己每次循环都取最新的值，用`getState()`来实现
 
 ### ref
 
@@ -60,6 +64,7 @@ export default function Form() {
 
 - effect会在每一次渲染后立刻被调用，可以用effect包装一些不允许在渲染期间做的操作
 - 可以为effect加入依赖数组，这样effect只会在依赖数组之内的值有更改的时候才调用，避免不必要的运行
+- 当依赖数组改变值，但是前后两次的值相等，也不会触发useEffect里面的函数
 
 ```js
 import { useState, useRef, useEffect } from 'react';
