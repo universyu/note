@@ -985,7 +985,129 @@ position写成`absolute`会以最近的已经定位的标签（也就是设置�
 
 
 
+**useLayoutEffect监听法**
 
+不写宽高，全靠自适应。
+
+```tsx
+<Dialog
+      open={downLoadingOpen}
+      ref={rootRef}
+      id="downloading-dialog"
+      maxWidth={false}
+      aria-describedby="alert-dialog-description"
+      sx={{
+        backgroundColor: 'rgb(94, 94, 94, 0.3)',
+      }}
+      PaperProps={{
+        style: {
+          minWidth: 600,
+          maxWidth: 700,
+          minHeight: ROOT_MIN_HEIGHT,
+          maxHeight: ROOT_MAX_HEIGHT,
+          borderRadius: 16,
+          textAlign: 'center',
+          padding: '20px 40px',
+          boxSizing: 'content-box',
+        },
+      }}
+    >
+      <div
+        style={{
+          fontSize: 16,
+          color: '#333',
+          fontWeight: 600,
+          marginBottom: '20px',
+        }}
+      >
+        {t('download:loading')}
+      </div>
+      <div
+        style={{
+          backgroundColor: '#ebebeb',
+        }}
+      >
+        <video ref={videoRef} style={{ width: '100%', height: '100%' }} autoPlay muted>
+          <source src={DOWNLODING_VIDEO[currentVideoIndex]} type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+      </div>
+    </Dialog>
+```
+
+一般的`useEffect`是异步的，而且无法直接调整标签的style，使用`useLayoutEffect`是同步阻塞的，而且可以直接操作style
+
+这里的Dialog是和root同级别的，是占满屏幕的，所以这里的范围限制其实是在这个范围内，让视频的父标签随着整个页面一起伸缩，超出这个范围则是给定最小或者最大值
+
+```tsx
+  useLayoutEffect(() => {
+    if (rootRef.current) {
+      const resizeObserver = new ResizeObserver((entries) => {
+        const rootElement = rootRef.current
+        const videoElement = videoRef.current
+        if (!rootElement || !videoElement) {
+          return
+        }
+
+        const parentElement = videoElement.parentElement
+        if (!parentElement) {
+          return
+        }
+
+        parentElement.style.width = Math.max(400, Math.min(rootElement.clientWidth, 600)) + 'px'
+        parentElement.style.height =
+          Math.max(
+            ROOT_MIN_HEIGHT,
+            Math.min(rootElement.clientHeight, ROOT_MAX_HEIGHT) - HEIGHT_PADDING
+          ) + 'px'
+      })
+      resizeObserver.observe(rootRef.current)
+
+      return () => {
+        resizeObserver.disconnect()
+      }
+    }
+  }, [rootRef.current, downLoadingOpen])
+```
+
+
+
+**useMemo法**
+
+自己写的相当于paper的组件用`useLayoutEffect`适配大小，利用一个`useState`变量存
+
+```tsx
+  useLayoutEffect(() => {
+    if (rootRef.current) {
+      const resizeObserver = new ResizeObserver((entries) => {
+        const rootElement = rootRef.current
+        if (!rootElement) {
+          return
+        }
+
+        setWrapperHeight(Math.max(300, Math.min(rootElement.clientHeight, 700)) - 100)
+      })
+      resizeObserver.observe(rootRef.current)
+      return () => {
+        resizeObserver.disconnect()
+      }
+    }
+  }, [])
+```
+
+canvas所在的组件用`useMemo`做高度，这样可以省去不必要的渲染，当一个变量触发UI的变化，但是它又与另外一个`useState`变量成常数关系时，就可以用`useMemo`
+
+```tsx
+  const canvasHeight = useMemo(() => {
+    return wrapperHeight - 250
+  }, [wrapperHeight])
+```
+
+canvas所在组件里面，用减法确保下面的文字有高度
+
+```tsx
+          height: extended ? '100%' : 'calc(100% - 40px)',
+```
 
 
 
@@ -1002,7 +1124,7 @@ position写成`absolute`会以最近的已经定位的标签（也就是设置�
 
 
 
-### 代替alert的提示
+### 代替alert
 
 ![10](D:\note\前端\实习\src\10.png)
 
@@ -1017,6 +1139,39 @@ position写成`absolute`会以最近的已经定位的标签（也就是设置�
         autoHideDuration: 2000,
       })
 ```
+
+
+
+或者使用mui的`Snackbar` 它的`anchorOrigin`会根据父级标签定位
+
+```tsx
+  const handleSnackbarClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setOpen(false)
+  }
+  
+	<Snackbar
+        open={open}
+        autoHideDuration={1500}
+        onClose={handleSnackbarClose}
+        message="Text copied to clipboard"
+        sx={{ '& .MuiSnackbarContent-root': { fontSize: '1.5rem' } }}
+        style={{
+          position: 'relative',
+          top: 15,
+        }}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      />
+```
+
+
+
+
 
 ### a标签
 
