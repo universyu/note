@@ -225,3 +225,12 @@ const NavbarClient: React.FC<NavbarClientProps> = ({ topText, children }) => {
 export default NavbarClient;
 ```
 
+
+
+
+
+
+
+### 请求后端
+
+直接`/api/sd`代表请求`src/app/api/sd/route.ts`
