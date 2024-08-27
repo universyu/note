@@ -1218,3 +1218,10 @@ export const downloadAndRename = async (url: string, name: string) => {
 
 ```
 
+
+
+
+
+### getter
+
+在类中写的带有`get`的函数调用的时候可以像一个属性一样，不需要用括号

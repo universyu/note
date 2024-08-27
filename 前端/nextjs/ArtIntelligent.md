@@ -234,3 +234,30 @@ export default NavbarClient;
 ### 请求后端
 
 直接`/api/sd`代表请求`src/app/api/sd/route.ts`
+
+
+
+### 设置超时限制
+
+（搭配了国际化的库）
+
+`next.config.mjs`
+
+```
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin();
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    serverActions: {
+      serverActionsTimeout: 60, // in seconds
+    },
+  },
+};
+
+export default withNextIntl(nextConfig);
+
+```
+

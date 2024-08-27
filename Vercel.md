@@ -30,3 +30,11 @@ install想要链接的仓库即可
 ### cloudflare配置CNAME
 
 `cname.vercel-dns.com`
+
+
+
+
+
+### 设置限时
+
+在项目的`Settings`里面的`Functions`里面设置
