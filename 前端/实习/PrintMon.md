@@ -317,6 +317,113 @@ export enum ETransform {
 
 
 
+### mui弹窗Dialog
+
+`Dialog`标签会出现在和`id=root`的`div`同一级，大小铺满整个屏幕。自动创建一个paper来装载内容，这个paper自动处于屏幕中央，可以用`PaperProps`来修改这个paper的样式。这个paper默认为`relative、flex-column`。
+
+下面是一个演示组件
+
+![14](D:\note\前端\实习\src\14.png)
+
+
+
+```tsx
+import { Button, Dialog, IconButton, Typography, styled } from '@mui/material'
+import { Close } from '@src/assets/icons/Close'
+import { usePromptStore } from '@src/stores/promptStore'
+import { t } from 'i18next'
+import React from 'react'
+type NoCreditWarningProps = {
+  style?: React.CSSProperties
+}
+
+const ActionButton = styled(Button)({
+  textTransform: 'none',
+  fontSize: 16,
+  fontWeight: 700,
+  lineHeight: '24px',
+  borderRadius: '8px',
+  padding: '8px 12px',
+  boxShadow: 'none',
+})
+
+const NoCreditWarning: React.FC<NoCreditWarningProps> = ({ style }) => {
+  const { noCreditWarningOpen, setNoCreditWarningOpen, setRedemptionOpen } = usePromptStore()
+  return (
+    <Dialog
+      open={noCreditWarningOpen}
+      PaperProps={{
+        style: {
+          width: 360,
+          padding: '32px 40px 20px',
+          position: 'relative',
+        },
+      }}
+    >
+      <IconButton
+        sx={{
+          position: 'absolute',
+          right: 8,
+          padding: 0,
+          top: 8,
+          color: (theme) => theme.palette.grey[500],
+        }}
+        onClick={() => setNoCreditWarningOpen(false)}
+      >
+        <Close />
+      </IconButton>
+      <Typography
+        style={{
+          fontSize: '16px',
+          lineHeight: '24px',
+          fontWeight: '700',
+          marginBottom: 32,
+        }}
+      >
+        {t('prompt:no_credit')}
+      </Typography>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
+        <ActionButton
+          variant="contained"
+          style={{
+            backgroundColor: '#ebebeb',
+            color: '#5c5c5c',
+            width: '32%',
+          }}
+          onClick={() => setNoCreditWarningOpen(false)}
+        >
+          {t('common:cancel')}
+        </ActionButton>
+        <ActionButton
+          variant="contained"
+          style={{
+            backgroundColor: '#00ae42',
+            color: 'white',
+            width: '60%',
+          }}
+          onClick={() => {
+            setNoCreditWarningOpen(false)
+            setRedemptionOpen(true)
+          }}
+        >
+          {t('prompt:redemption')}
+        </ActionButton>
+      </div>
+    </Dialog>
+  )
+}
+
+export default NoCreditWarning
+
+```
+
+
+
 ### mui文本输入框TextField
 
 - fullWidth让其占满宽度
@@ -577,86 +684,6 @@ export default InputItem
 ```
 
 
-
-### 弹窗Dialog
-
-`Dialog`标签会出现在和`id=root`的`div`同一级，大小铺满整个屏幕。自动创建一个paper来装载内容，这个paper自动处于屏幕中央，可以用`PaperProps`来修改这个paper的样式。这个paper默认为`relative、flex-column`。如果希望大小自适应，就把paper的宽高写死，然后把里面的希望自适应的标签写成min、maxHeight和flex:1。  下面是一个演示组件
-
-![11](D:\note\前端\实习\src\11.png)
-
-为title设置一个高度确保把后面的元素顶下去，IconButton的color是点击时的颜色
-
-```tsx
-import { Dialog, DialogTitle, IconButton, styled } from '@mui/material'
-import { Close } from '@src/assets/icons/Close'
-import { usePromptStore } from '@src/stores/promptStore'
-import { t } from 'i18next'
-import React from 'react'
-
-const CenterP = styled('p')(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  padding: '0 40px',
-  margin: 0,
-  fontSize: '16px',
-  fontWeight: 700,
-  lineHeight: '24px',
-}))
-
-type RedemptionProps = {
-  style?: React.CSSProperties
-}
-
-const Redemption: React.FC<RedemptionProps> = ({ style }) => {
-  const { redemptionOpen, setRedemptionOpen } = usePromptStore()
-  return (
-    <Dialog
-      open={redemptionOpen}
-      sx={{
-        backgroundColor: 'rgb(94, 94, 94, 0.3)',
-      }}
-      PaperProps={{
-        style: {
-          width: '480px',
-          height: '456px',
-          boxSizing: 'border-box',
-          borderRadius: '16px',
-        },
-      }}
-    >
-      <DialogTitle
-        style={{
-          position: 'relative',
-          height: '36px',
-          padding: '0',
-        }}
-      >
-        <IconButton
-          aria-label="close"
-          sx={{
-            color: (theme) => theme.palette.grey[500],
-            position: 'absolute',
-            right: '8px',
-            '&:hover': {
-              backgroundColor: 'transparent',
-            },
-          }}
-          onClick={() => {
-            setRedemptionOpen(false)
-          }}
-        >
-          <Close />
-        </IconButton>
-      </DialogTitle>
-      <CenterP>{t('prompt:redemption_title')}</CenterP>
-    </Dialog>
-  )
-}
-
-export default Redemption
-
-```
 
 
 
