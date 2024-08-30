@@ -317,6 +317,14 @@ export enum ETransform {
 
 
 
+### mui的Paper
+
+如果纸张一样的组件
+
+- elevation={0}去掉阴影，数字越大阴影就越深
+
+
+
 ### mui弹窗Dialog
 
 `Dialog`标签会出现在和`id=root`的`div`同一级，大小铺满整个屏幕。自动创建一个paper来装载内容，这个paper自动处于屏幕中央，可以用`PaperProps`来修改这个paper的样式。这个paper默认为`relative、flex-column`。
@@ -432,6 +440,17 @@ export default NoCreditWarning
 - color选择选中时的下划线颜色
 - rows设置总行数
 - inputProps设置文字的样式
+- 去掉下划线
+
+```tsx
+        sx={{
+          '& .MuiInput-underline:before': { borderBottom: 'none' },
+          '& .MuiInput-underline:after': { borderBottom: 'none' },
+          '& .MuiInput-underline:hover:not(.Mui-disabled):before': { borderBottom: 'none' },
+        }}
+```
+
+
 
 示例：
 
