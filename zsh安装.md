@@ -11,3 +11,5 @@
 自动启用插件`echo "source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ${ZDOTDIR:-$HOME}/.zshrc`
 
 启用命令补全插件`echo "source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh" >> ${ZDOTDIR:-$HOME}/.zshrc`
+
+自动启动zsh：在~/.bashrc末尾加入`exec zsh`
