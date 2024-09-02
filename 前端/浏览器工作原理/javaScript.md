@@ -121,3 +121,28 @@ var myObj = new CreateObj()
 
 
 
+### 生成器、协程
+
+协程是比线程更小的单位，一个线程同一时间只能有一个协程运行。
+
+利用`*`声明生成器，其中`yield`将线程控制权交给父协程，并将其后面的内容返回。
+`next()`将线程控制权交给生成器
+
+
+
+### async/await
+
+**示例代码**
+
+```js
+async function foo() {
+    console.log(1)
+    let a = await 100
+    console.log(a)
+}
+console.log(0)
+foo()
+console.log(3)
+```
+
+首先输出0，然后把线程控制权交给协程foo输出1，然后`let a = await 100`隐式构建了一个`Promise`并进入微任务队列，将线程控制权交给父协程输出3，等微任务执行后控制权还给协程foo，输出a的值100
