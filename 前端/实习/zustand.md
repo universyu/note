@@ -32,6 +32,19 @@ export const usePromptStore = create<storeState>((set) => ({
 
 ```
 
+#### 避免深拷贝
+
+如果变量是对象或者数组，常常需要深拷贝做set才能触发UI的重新渲染，为了避免这个问题，可以使用`immer`库
+
+```ts
+export const usePromptStore = create(immer<storeState>( (set) => ({
+  ...initStates,
+  setPromptType: (promptType) => {
+    set((state) => ({ state.promptType = state.promptType }))
+  },
+})))
+```
+
 
 
 #### 调用方法
@@ -169,4 +182,6 @@ const { generateSD } = useSDStore()
 ##### 普通法
 
 形如`const { makeId } = useGlobalStore.getState()`的用法可以在任意地方使用，只是单纯的获取一次值，而不会跟随着全局变量做更新
+
+
 

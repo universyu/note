@@ -327,7 +327,7 @@ export enum ETransform {
 
 ### mui弹窗Dialog
 
-`Dialog`标签会出现在和`id=root`的`div`同一级，大小铺满整个屏幕。自动创建一个paper来装载内容，这个paper自动处于屏幕中央，可以用`PaperProps`来修改这个paper的样式。这个paper默认为`relative、flex-column`。
+`Dialog`标签会出现在和`id=root`的`div`同一级，大小铺满整个屏幕。自动创建一个paper来装载内容，这个paper自动处于屏幕中央，可以用`PaperProps`来修改这个paper的样式，其中`maxWeight:none`可以去掉最大宽度限制。这个paper默认为`relative、flex-column`。
 
 下面是一个演示组件
 
