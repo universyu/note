@@ -10,7 +10,7 @@ fixed元素默认图层被后面的元素低级，如果要fixed元素显示在�
 
 ####  absolute
 
-设定为`position:absolute`后设置`left`和`right`都为零就可以让它铺满整个父级，设置`absolute`之后一些属性会失效，比如`justifyContent: 'flex-end'`
+设定为`position:absolute`后设置`left`和`right`都为零就可以让它铺满整个父级，设置`absolute`之后一些属性会失效，比如`justifyContent: 'flex-end'`，absolute的元素，它的位置默认是它上面那个元素的位置
 
 
 
