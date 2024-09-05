@@ -1244,30 +1244,6 @@ canvas所在组件里面，用减法确保下面的文字有高度
 
 
 
-
-
-### 确保下载文件名称
-
-```ts
-export const downloadAndRename = async (url: string, name: string) => {
-  const response = await fetch(url)
-  const blob = await response.blob()
-  const urlBlob = window.URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = urlBlob
-  link.download = name
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  window.URL.revokeObjectURL(urlBlob)
-}
-
-```
-
-
-
-
-
 ### getter
 
-在类中写的带有`get`的函数调用的时候可以像一个属性一样，不需要用括号
+在类中写的带有`get`的函数调用的时候可以像一个属性一样，不需要用括号数
