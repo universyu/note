@@ -1031,7 +1031,7 @@ position写成`absolute`会以最近的已经定位的标签（也就是设置�
 
 
 
-**useLayoutEffect监听法**
+**Downloading界面自适应**
 
 不写宽高，全靠自适应。
 
@@ -1081,7 +1081,7 @@ position写成`absolute`会以最近的已经定位的标签（也就是设置�
     </Dialog>
 ```
 
-一般的`useEffect`是异步的，而且无法直接调整标签的style，使用`useLayoutEffect`是同步阻塞的，而且可以直接操作style
+`useEffect`是异步的，而且无法直接调整标签的style，使用`useLayoutEffect`是同步阻塞的，而且可以直接操作style
 
 这里的Dialog是和root同级别的，是占满屏幕的，所以这里的范围限制其实是在这个范围内，让视频的父标签随着整个页面一起伸缩，超出这个范围则是给定最小或者最大值
 
@@ -1118,7 +1118,7 @@ position写成`absolute`会以最近的已经定位的标签（也就是设置�
 
 
 
-**useMemo法**
+**DownloadReady界面自适应**
 
 自己写的相当于paper的组件用`useLayoutEffect`适配大小，利用一个`useState`变量存
 
