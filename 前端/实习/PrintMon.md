@@ -1186,6 +1186,9 @@ canvas所在组件里面，用减法确保下面的文字有高度
       })
 ```
 
+这个钩子的使用前提是在根级标签外包裹了`SnackbarProvider`
+`import { SnackbarProvider } from 'notistack'`
+
 
 
 或者使用mui的`Snackbar` 它的`anchorOrigin`会根据父级标签定位
