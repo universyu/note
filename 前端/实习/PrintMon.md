@@ -319,7 +319,7 @@ export enum ETransform {
 
 ### mui的Paper
 
-如果纸张一样的组件
+如同纸张一样的组件
 
 - elevation={0}去掉阴影，数字越大阴影就越深
 
