@@ -1264,3 +1264,9 @@ canvas所在组件里面，用减法确保下面的文字有高度
 ### 删除文字的划线
 
 可以用del标签做，也可以给span标签加上`textDecoration: 'line-through'`
+
+
+
+### 可在子组件修改的Ref
+
+子组件的参数中接收`React.MutableRefObject<...>`则这个Ref是可以被修改的
