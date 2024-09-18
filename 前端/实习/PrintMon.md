@@ -1270,3 +1270,18 @@ canvas所在组件里面，用减法确保下面的文字有高度
 ### 可在子组件修改的Ref
 
 子组件的参数中接收`React.MutableRefObject<...>`则这个Ref是可以被修改的
+
+
+
+### 共用组件
+
+为了让部分内容是可选显示的，可以设置可选参数，让参数默认为true就可以了
+
+```ts
+interface Props {
+  style?: React.CSSProperties
+  showDownload?: boolean
+}
+export const TopBar: React.FC<Props> = ({ style, showDownload = true }) => {
+```
+
