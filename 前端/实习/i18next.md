@@ -31,5 +31,33 @@ import { I18nextProvider, initReactI18next } from 'react-i18next'
     </I18nextProvider>
 ```
 
+普通调用法
 
+```ts
+import { t } from 'i18next'
+{t('prompt:title')}
+```
+
+参数调用法
+
+```ts
+		  import { Trans } from 'react-i18next'
+
+          <Trans
+            i18nKey="prompt:sd_await"
+            components={{
+              bold: <span style={{ fontWeight: 'bolder', color: 'black' }} />,
+            }}
+            values={{
+              jobAwait: sdAwait,
+              time: estimatedTime,
+            }}
+          />
+```
+
+其中的文本是：
+
+```json
+"sd_await": "<bold>{{jobAwait}}</bold> users ahead, approx. <bold>{{time}}</bold> min to wait."
+```
 
