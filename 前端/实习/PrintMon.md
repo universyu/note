@@ -1285,3 +1285,48 @@ interface Props {
 export const TopBar: React.FC<Props> = ({ style, showDownload = true }) => {
 ```
 
+
+
+### IOS风格的Switch
+
+![15](D:\note\前端\实习\src\15.png)
+
+![16](D:\note\前端\实习\src\16.png)
+
+```ts
+export const IOSSwitch = styled(Switch)({
+  width: 36,
+  height: 20,
+  padding: 0,
+  //滑块这一部分的整体，滑块整体由input和两个span构成
+  '& .MuiSwitch-switchBase': {
+    padding: 0,
+    margin: 2,
+    transitionDuration: '300ms',
+      //表示选中状态的滑块
+    '&.Mui-checked': {
+      transform: 'translateX(16px)',
+      color: '#fff',
+        //表示选中状态的滑块整体的兄弟节点中的.MuiSwitch-track，也就是选中时的滑轨
+      '& + .MuiSwitch-track': {
+        backgroundColor: '#00ae42',
+        opacity: 1,
+      },
+    },
+  },
+    //滑块里面其中一个span也就是.MuiSwitch-thumb就是显示的白圆圈
+  '& .MuiSwitch-thumb': {
+    boxSizing: 'border-box',
+    width: 16,
+    height: 16,
+  },
+    //滑轨
+  '& .MuiSwitch-track': {
+    borderRadius: 10,
+    backgroundColor: '#E9E9EA',
+    opacity: 1,
+    transition: 'background-color 500ms',
+  },
+})
+```
+
