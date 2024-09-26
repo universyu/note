@@ -185,3 +185,26 @@ const { generateSD } = useSDStore()
 
 
 
+### 优化性能
+
+当同一个state里面的变量改变的时候，会导致其他变量所影响的UI也被重新计算，经过React虚拟DOM的比较，发现没有变化的不会重新渲染。
+
+为了直接避免重新计算UI，可以将需要state变量单独返回
+
+```tsx
+const { theme } = useGlobalStore( state => state.theme )
+const { setTheme } = useGlobalStore( state => state.setTheme )
+```
+
+但如果变量很多，写很多行就会很麻烦，可以用zustand提供的接口解决这个问题
+
+```tsx
+const { theme, setTheme } = useGlobalStore(
+	useShallow(state => ({
+        theme: state.theme,
+        setTheme: state.setTheme,
+    })
+    )
+)
+```
+
