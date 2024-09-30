@@ -439,6 +439,7 @@ export default NoCreditWarning
 - variant选择样式
 - color选择选中时的下划线颜色
 - rows设置总行数
+- error依赖的值为true时border为红色
 - inputProps设置文字的样式
 - 去掉下划线
 
@@ -447,6 +448,18 @@ export default NoCreditWarning
           '& .MuiInput-underline:before': { borderBottom: 'none' },
           '& .MuiInput-underline:after': { borderBottom: 'none' },
           '& .MuiInput-underline:hover:not(.Mui-disabled):before': { borderBottom: 'none' },
+        }}
+```
+
+- 去掉滑动栏
+
+```tsx
+        inputProps={{
+          style: {
+            overflow: 'scroll',
+            scrollBehavior: 'smooth',
+            scrollbarWidth: 'none',
+          },
         }}
 ```
 
@@ -1328,6 +1341,22 @@ export const IOSSwitch = styled(Switch)({
     transition: 'background-color 500ms',
   },
 })
+```
+
+
+
+### Blob下载
+
+以`json`字符为例，需要下载的数据要用`[]`包裹起来，因为这个函数里面需要传入数组
+
+```tsx
+    const blob = new Blob([jsonString], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'users.json'
+    link.click()
+    URL.revokeObjectURL(url)
 ```
 
 
