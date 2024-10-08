@@ -82,3 +82,9 @@ commit使用尾插法
 ## git fetch
 
 获取远端最新状态
+
+
+
+## 便捷指令
+
+`gco -b main origin/main`直接依赖远端的main分支开创本地main分支
