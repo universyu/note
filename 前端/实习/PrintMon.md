@@ -512,6 +512,14 @@ export default NoCreditWarning
 
 `style`里面设置`textTransform: 'none'`确保不影响文字的大小写
 
+`CircularProgress`可以为`Button`加上loading的效果
+
+```tsx
+startIcon={confirmLoading ? <CircularProgress size={20} color="inherit" /> : null}
+```
+
+![18](D:\note\前端\实习\src\18.png)
+
 ### mui菜单栏
 
 #### styled
@@ -602,6 +610,40 @@ const StepButton = styled(ToggleButton)(({ theme }) => ({
  ...
 </Popover>
 ```
+
+
+
+### mui做Alert
+
+配合Snackbar一起使用，可以设置持续出现的时间，Snackbar的position默认是fixed
+
+```tsx
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={1500}
+        style={{
+          top: 12,
+        }}
+        onClose={() => {
+          setSnackbarOpen(false)
+        }}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+      >
+        <Alert
+          severity="error"
+          sx={{ width: '100%', fontSize: '15px' }}
+          variant="filled"
+          onClose={() => setSnackbarOpen(false)}
+        >
+          {t('common:credits_error')}
+        </Alert>
+      </Snackbar>
+```
+
+
 
 
 
@@ -1201,37 +1243,6 @@ canvas所在组件里面，用减法确保下面的文字有高度
 
 这个钩子的使用前提是在根级标签外包裹了`SnackbarProvider`
 `import { SnackbarProvider } from 'notistack'`
-
-
-
-或者使用mui的`Snackbar` 它的`anchorOrigin`会根据父级标签定位
-
-```tsx
-  const handleSnackbarClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') {
-      return
-    }
-    setOpen(false)
-  }
-  
-	<Snackbar
-        open={open}
-        autoHideDuration={1500}
-        onClose={handleSnackbarClose}
-        message="Text copied to clipboard"
-        sx={{ '& .MuiSnackbarContent-root': { fontSize: '1.5rem' } }}
-        style={{
-          position: 'relative',
-          top: 15,
-        }}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-      />
-```
-
-
 
 
 
