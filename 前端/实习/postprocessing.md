@@ -64,7 +64,7 @@
 
 用glsl实现自定义边缘过渡后处理。
 
-`shader`可以从`uniform`拿数据，
+`shader`可以从`uniform`拿数据
 
 ```ts
 import { BlendFunction, Effect } from 'postprocessing'
@@ -108,6 +108,15 @@ export class GradientEffect extends Effect {
 
 ```
 
+调用
+
+```ts
+    const gradientEffect = new GradientEffect({
+      color: [0.83, 0.83, 0.83, 1],
+      range: 0.08,
+    })
+```
+
 
 
 ### EffectPass
@@ -121,7 +130,8 @@ export class GradientEffect extends Effect {
       this.outlineEffect,
       this.bloomEffect,
       fxaaEffect,
-      this.vignetteEffect
+      this.vignetteEffect,      
+      gradientEffect
     )
     this.composer.addPass(effectPass)
 ```
