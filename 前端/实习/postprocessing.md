@@ -60,6 +60,56 @@
 
 
 
+### 自定义GradientEffect
+
+用glsl实现自定义边缘过渡后处理。
+
+`shader`可以从`uniform`拿数据，
+
+```ts
+import { BlendFunction, Effect } from 'postprocessing'
+import { Uniform, Vector2 } from 'three'
+
+const fragmentShader = `
+  uniform vec2 resolution;
+  uniform vec4 color;
+  uniform float range;
+
+  void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor) {
+    float gradient = smoothstep(0.0, range, uv.x);
+    outputColor = mix(color, inputColor, gradient);
+  }
+`
+
+export class GradientEffect extends Effect {
+  constructor({ blendFunction = BlendFunction.NORMAL, color = [1, 0, 0, 1], range = 1.0 } = {}) {
+    super('GradientEffect', fragmentShader, {
+      blendFunction,
+      uniforms: new Map<string, Uniform>([
+        ['resolution', new Uniform(new Vector2(1, 1))],
+        ['color', new Uniform(color)],
+        ['range', new Uniform(range)],
+      ]),
+    })
+  }
+
+  setResolution(width: number, height: number) {
+    this.uniforms.get('resolution')!.value.set(width, height)
+  }
+
+  setColor(r: number, g: number, b: number, a: number) {
+    this.uniforms.get('color')!.value = [r, g, b, a]
+  }
+
+  setRange(range: number) {
+    this.uniforms.get('range')!.value = Math.max(0, Math.min(1, range))
+  }
+}
+
+```
+
+
+
 ### EffectPass
 
 多个效果组合到一个处理阶段中
