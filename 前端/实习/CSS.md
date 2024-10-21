@@ -17,3 +17,17 @@ fixed元素默认图层被后面的元素低级，如果要fixed元素显示在�
 #### maxHeight
 
 使用mui时，遇到设置尺寸失效需要设置maxHeight和maxWidth
+
+
+
+#### flex: 1
+
+如果子元素全都是`flex:1`但有一个默认的最小尺寸，可能会导致最后面的元素被挤出去，用`min-width: 0`的方式防止这种情况
+
+
+
+#### border-box与flex: 1
+
+`border`是放在元素外层的，对于一个`flex`的`div`，如果它的所有子元素都用`flex:1`，那么它们自己的大小是均分父级元素的大小的结果，但是不包含`border`，即便它们是`box-sizing: border-box`。
+
+解决方案是把它们的宽设置`100%`然后包裹在一个`div`里面，这个`div`设置`flex:1`，或者直接给每个子元素都加同大小的`border`
