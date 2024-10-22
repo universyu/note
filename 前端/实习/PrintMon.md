@@ -645,6 +645,135 @@ const StepButton = styled(ToggleButton)(({ theme }) => ({
 
 
 
+### mui可折叠卡片
+
+![19](D:\note\前端\实习\src\19.png)
+
+![20](D:\note\前端\实习\src\20.png)
+
+`Accordion`结构
+
+```tsx
+    <Accordion>
+      <AccordionSummary>
+        ...展开前的内容
+      </AccordionSummary>
+      <AccordionDetails>
+          ...展开后多出来的内容
+      </AccordionDetails>
+    </Accordion>
+```
+
+实例
+
+```tsx
+    <Accordion
+      sx={{
+        //before和shadow去掉上下的两条线
+        '&:before': {
+          display: 'none',
+        },
+        boxShadow: 'none',
+        backgroundColor: '#f2f2f2',
+        borderRadius: '8px',
+        //为了让ICON的absolute放对位置
+        position: 'relative',
+      }}
+    >
+      <AccordionSummary
+        expandIcon={<DropdownArrowIcon />}
+        sx={{
+          fontSize: 12,
+          lineHeight: '18px',
+          fontFamily: 'Open Sans',
+          //设置子标签中.MuiAccordionSummary-content.Mui-expanded的样式
+          '& .MuiAccordionSummary-content.Mui-expanded': {
+            margin: 0,
+          },
+        }}
+      >
+        {summary}
+      </AccordionSummary>
+      <AccordionDetails sx={{ paddingTop: 0 }}>{details}</AccordionDetails>
+    </Accordion>
+```
+
+子元素`summary`
+
+```tsx
+ //AccordionSummary默认是flex，这里的title是一个Trans，里面用了<strong>标签，会把一段话分为一个strong标签和一段字符串，如果不用div包裹整个title就会导致它被flex隔开
+	<div>
+      {icon && <div style={{ position: 'absolute', left: 0, top: 0 }}>{icon}</div>}
+      {title}
+    </div>
+```
+
+子元素`details`
+
+```tsx
+export const AccordionContent: React.FC<AccordionContentProps> = ({
+  tutorialUrl,
+  purchaseUrl,
+  cardImgUrl,
+  cardTitle,
+  cardDesc,
+}) => {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      {/* 购买链接 */}
+      <a
+        href={tutorialUrl}
+        style={{
+          color: '#00AE42',
+          textDecoration: 'none',
+          marginBottom: 12,
+          fontSize: '12px',
+          lineHeight: '18px',
+        }}
+      >
+        {t('base:tips_tutorial')}
+      </a>
+      {/* 教程卡片 */}
+
+      <Card
+        sx={{ display: 'flex', borderRadius: '10px' }}
+        onClick={() => {
+          window.open(purchaseUrl, '_blank')
+        }}
+      >
+        <CardMedia
+          component="img"
+          sx={{ width: 70, borderTopLeftRadius: 10, borderBottomLeftRadius: 10 }}
+          image={cardImgUrl}
+          alt=""
+        />
+        <Box sx={{ display: 'flex', flexDirection: 'column', cursor: 'pointer' }}>
+          <CardContent sx={{ flex: '1 0 auto' }}>
+            <Typography fontSize={12} lineHeight={'18px'} fontWeight={600}>
+              {cardTitle}
+            </Typography>
+            <Typography fontSize={10} lineHeight={'18px'}>
+              {cardDesc}
+            </Typography>
+          </CardContent>
+        </Box>
+      </Card>
+    </div>
+  )
+}
+```
+
+
+
+
+
+
+
 
 
 ### 滑动框
