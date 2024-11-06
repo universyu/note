@@ -39,3 +39,27 @@ fixed元素默认图层被后面的元素低级，如果要fixed元素显示在�
 #### grid
 
 如果`grid`设置`gridTemplateColumns: 'repeat(3, 1fr)'`那么它是确保一行三个，且三个均分大小，这里均分大小是指整个元素加上边框的大小是相同的，而子元素全`flex: 1`只能确保子元素不算边框的内部大小相同
+
+
+
+#### hover换视频
+
+将图片的`opacity`设置为`1`，在`hover`状态则变为`0`，而视频就放在同一个父级容器下，用`absolute`
+
+```tsx
+const BaseVideo = styled('video')({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '100%',
+  borderRadius: '8px',
+  opacity: 0,
+  boxSizing: 'border-box',
+  transition: 'opacity 0.3s ease',
+  '&:hover': {
+    opacity: 1,
+  },
+  cursor: 'pointer',
+})
+```
+

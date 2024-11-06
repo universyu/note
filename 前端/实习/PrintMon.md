@@ -1501,3 +1501,29 @@ export const IOSSwitch = styled(Switch)({
 
 
 
+### Promise.all
+
+（只有textureDiffuse需要使用SRGB）
+
+```
+         const textureLoader = new THREE.TextureLoader()
+          const loadTexture = (url: string, useSRGB = true) => {
+            return new Promise<THREE.Texture>((resolve) => {
+              textureLoader.load(url, (texture) => {
+                texture.colorSpace = useSRGB ? THREE.SRGBColorSpace : THREE.LinearSRGBColorSpace
+                resolve(texture)
+              })
+            })
+          }
+
+          const texturePromises = [
+            textureUrl ? loadTexture(textureUrl, true) : Promise.resolve(undefined),
+            metallicImageUrl ? loadTexture(metallicImageUrl, false) : Promise.resolve(undefined),
+            roughnessImageUrl ? loadTexture(roughnessImageUrl, false) : Promise.resolve(undefined),
+          ]
+
+          Promise.all(texturePromises).then(([diffuseMap, metallicMap, roughnessMap]) => {
+            constructModel(diffuseMap, metallicMap, roughnessMap)
+          })
+```
+
