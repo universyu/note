@@ -31,5 +31,25 @@ mat4(1, 0, 0, 0,
 
 这里的 mat4 每一行是一个 vec4 ， 而 vec4 是列向量
 
+## 反射矩阵
 
+求向量关于法向量为`n`的平面的反射向量，向量与反射向量在`n`上的投影向量反向
+
+```glsl
+vec3 reflectPoint(vec3 p, vec3 n) {
+  return p - 2.0 * dot(n, p) * n / dot(n, n);
+}
+```
+
+`normalize`将每个轴的值都除以模长，将反射构建成矩阵
+
+```glsl
+highp mat4 reflection(highp vec3 n) {
+  n = normalize(n);
+  return mat4(1.0-2.0*n.x*n.x,    -2.0*n.y*n.x,    -2.0*n.z*n.x, 0,
+                 -2.0*n.y*n.x, 1.0-2.0*n.y*n.y,    -2.0*n.z*n.y, 0, 
+                 -2.0*n.z*n.x,    -2.0*n.y*n.z, 1.0-2.0*n.z*n.z, 0,
+                            0,               0,               0, 1);
+}
+```
 
