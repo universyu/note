@@ -464,3 +464,10 @@ export function makeBaseConvexHull(mesh: THREE.Mesh, surfaceZ: number): THREE.Ve
   }
 ```
 
+### 惯性视角
+
+```ts
+    this.controls = new OrbitControls(this.camera, this.canvas)
+    this.controls.enableDamping = true
+```
+

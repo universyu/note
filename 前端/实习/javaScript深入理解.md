@@ -8,3 +8,25 @@
 
 
 
+## async与Promise
+
+`async`函数都返回一个`promise`，其返回值相当于`promise`的`resolve`或`reject`
+
+在`useEffect`里面用异步函数
+```ts
+  useEffect(() => {
+    const initFunc = async () => {
+        ...
+      threeDeeRenderer.addSubtractHandler(subtractHandler)
+      return () => {
+          // 这是卸载时需要清理的
+        threeDeeRenderer.removeSubtractHandler(subtractHandler)
+      }
+    }
+    const cleanUp = initFunc()
+    return () => {
+      cleanUp.then( cleanUpFunc => cleanUpFunc?.() )
+    }
+  }, [...])
+```
+
