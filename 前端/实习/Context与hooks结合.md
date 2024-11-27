@@ -1,127 +1,86 @@
 # Context与hooks结合
 
-## 顶层Provider
+## 构造上下文
 
-构造一个确认弹窗，将其`Provider`放置顶层，下面的子组件各处都可以调用
-
-```tsx
-      <ConfirmDialogProvider>
-    		....		
-      </ConfirmDialogProvider>
-```
+这里把 `show` 当做全局传递变量，用`useMemo`防止重复渲染
 
 ```tsx
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
-import { useMemoizedFn } from 'ahooks'
-import React, { useEffect, useMemo, useState } from 'react'
-
-type ShowFnParamsType = {
-  title: string
-  confirmFn: Function
-  confirmSuccessCb?: Function
-  confirmErrorCb?: Function
-  Content?: React.ReactNode
-  cancelFn?: Function
-  afterClose?: Function
+import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
+import { Close } from '@src/assets/icons/Close'
+import { CancelButton, WarningButton } from '@src/components/common'
+import { t } from 'i18next'
+import React, { ReactNode, useMemo, useState } from 'react'
+type showFnParamsType = {
+  title: ReactNode
+  content?: ReactNode
 }
+
 type ConfirmDialogContextType = {
-  show: ({
-    title,
-    confirmFn,
-    Content,
-    cancelFn,
-    confirmSuccessCb,
-    confirmErrorCb,
-  }: ShowFnParamsType) => void
+  show: ({ title, content }: showFnParamsType) => Promise<unknown>
 }
+
 export const ConfirmDialogContext = React.createContext<ConfirmDialogContextType>(null as any)
+
 type ConfirmDialogProviderProps = {
   children: React.ReactNode
 }
+
 export function ConfirmDialogProvider({ children }: ConfirmDialogProviderProps) {
-  const [open, setOpen] = useState(false)
-  const [Content, setContent] = useState<React.ReactNode>()
-  const [title, setTitle] = useState('')
-  const [myConfirmFn, setMyConfirmFn] = useState<Function>()
-  const [myCancelFn, setMyCancelFn] = useState<Function>()
-  const [submitting, setSubmitting] = useState(false)
-  const [confirmSuccessCb, setConfirmSuccessCb] = useState<Function>()
-  const [confirmErrorCb, setConfirmErrorCb] = useState<Function>()
-  const [afterClose, setAfterClose] = useState<Function>()
-  const show = useMemoizedFn(
-    ({
-      title,
-      confirmFn,
-      cancelFn,
-      Content,
-      confirmSuccessCb,
-      confirmErrorCb,
-      afterClose,
-    }: ShowFnParamsType) => {
-      setOpen(true)
-      setTitle(title)
-      setConfirmSuccessCb(confirmSuccessCb)
-      setConfirmErrorCb(confirmErrorCb)
-      setAfterClose(afterClose)
-      // console.log(confirmFn())
-      setMyConfirmFn(() => confirmFn())
-      if (Content) {
-        setContent(Content)
-      }
-      const defaultCancelFn = () => {
-        return () => {
-          setOpen(false)
-        }
-      }
-      const hasCancelFn = () => cancelFn?.()
-      setMyCancelFn(cancelFn ? hasCancelFn : defaultCancelFn)
-    }
+  const [dialogTitle, setDialogTitle] = useState<ReactNode | null>(null)
+  const [dialogContent, setDialogContent] = useState<ReactNode | null>(null)
+  const [dialogPromise, setDialogPromise] = useState<{ resolve: (value: unknown) => void } | null>(
+    null
   )
+  const show = ({ title, content }: showFnParamsType) => {
+    const promise = new Promise((resolve) => {
+      setDialogPromise({ resolve })
+    })
+    setDialogTitle(title)
+    setDialogContent(content)
+    return promise
+  }
+  const contextValue = useMemo(() => ({ show }), [show])
 
-  const value = useMemo(() => ({ show }), [show])
+  const handleClose = () => {
+    setDialogPromise(null)
+  }
 
-  const handleConfirm = async () => {
-    setSubmitting(true)
-    if (!myConfirmFn) {
-      setOpen(false)
-      setSubmitting(false)
-    }
-    try {
-      await myConfirmFn?.()
-      setOpen(false)
-      setSubmitting(false)
-      confirmSuccessCb && confirmSuccessCb()
-    } catch (error) {
-      setSubmitting(false)
-      confirmErrorCb && confirmErrorCb()
-    }
+  const onConfirm = () => {
+    dialogPromise?.resolve(true)
+    handleClose()
+  }
+
+  const onCancel = () => {
+    dialogPromise?.resolve(false)
+    handleClose()
   }
 
   return (
-    <ConfirmDialogContext.Provider value={value}>
+    <ConfirmDialogContext.Provider value={contextValue}>
       {children}
-      <Dialog
-        sx={{
-          '& .MuiDialog-paper': { width: '80%', maxHeight: 435 },
-          zIndex: (theme) => theme.zIndex.drawer + 1000,
-        }}
-        maxWidth="xs"
-        open={open}
-      >
-        <DialogTitle>{title}</DialogTitle>
-        <DialogContent dividers>{Content}</DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => {
-              myCancelFn?.()
-            }}
-            disabled={submitting}
+      <Dialog open={!!dialogPromise} PaperProps={{ sx: { padding: '24px 24px 8px' } }}>
+        <DialogTitle
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            fontSize: 16,
+            fontWeight: 600,
+            lineHeight: '24px',
+            paddingLeft: 0,
+          }}
+        >
+          {dialogTitle}
+          <div
+            onClick={onCancel}
+            style={{ cursor: 'pointer', position: 'absolute', right: 12, top: 12 }}
           >
-            取消
-          </Button>
-          <Button onClick={handleConfirm} disabled={submitting}>
-            确认
-          </Button>
+            <Close />
+          </div>
+        </DialogTitle>
+        <DialogContent>{dialogContent}</DialogContent>
+        <DialogActions>
+          <CancelButton onClick={onCancel}>{t('common:no')}</CancelButton>
+          <WarningButton onClick={onConfirm}>{t('common:yes')}</WarningButton>
         </DialogActions>
       </Dialog>
     </ConfirmDialogContext.Provider>
@@ -132,30 +91,44 @@ export function ConfirmDialogProvider({ children }: ConfirmDialogProviderProps) 
 
 
 
-## 封装hook
+## 构造hooks
 
 ```tsx
+import { ConfirmDialogContext } from '@src/components/confirm/confirmDialogContext'
 import { useContext } from 'react'
-import { ConfirmDialogContext } from '@src/components/comfirm/confirmDialogContext'
 
 export const useConfirmDialog = () => useContext(ConfirmDialogContext)
 ```
 
 
 
-## 应用
+## 使用hooks
+
+### 使用 Provider
 
 ```tsx
-  const confirmDialog = useConfirmDialog()
-      confirmDialog.show({
-      title: 'Delete',
-      Content: 'Are you sure?',
-      confirmFn: () => {
-        return async () => {
-          onDelete(index)
-          setIsDelete(true)
-        }
-      },
-    })
+      <ConfirmDialogProvider>
+        <ImageEdit />
+      </ConfirmDialogProvider>
 ```
+
+
+
+### 使用全局函数 show
+
+```tsx
+import { useConfirmDialog } from '@src/hooks/useConfirmDialog'
+import React from 'react'
+interface ImageEditProps {}
+
+const ImageEdit: React.FC<ImageEditProps> = () => {
+  const confirmDialog = useConfirmDialog()
+  return <div>init</div>
+}
+
+export default ImageEdit
+
+```
+
+
 
