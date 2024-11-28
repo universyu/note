@@ -32,6 +32,7 @@ export function ConfirmDialogProvider({ children }: ConfirmDialogProviderProps) 
     null
   )
   const show = ({ title, content }: showFnParamsType) => {
+      // 存下这个 promise 的 resolve 函数
     const promise = new Promise((resolve) => {
       setDialogPromise({ resolve })
     })
