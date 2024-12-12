@@ -22,6 +22,14 @@
       backgroundColor: '#FFFFFF',
     })
     this._center = this.canvas.getVpCenter()
+    // init drag info
+    this.dragInfo = {
+      isDragging: false,
+      lastPointerX: 0,
+      lastPointerY: 0,
+      lastImgLeft: 0,
+      lastImgTop: 0,
+    }
   }
 ```
 
@@ -104,14 +112,6 @@
 
 ```ts
   private setupCanvasListener() {
-    // init drag info
-    this.dragInfo = {
-      isDragging: false,
-      lastPointerX: 0,
-      lastPointerY: 0,
-      lastImgLeft: 0,
-      lastImgTop: 0,
-    }
     // 滚轮缩放，以鼠标为中心
     const handleZoom = throttle((pointer: fabric.Point, delta: number) => {
       let zoom = (this._image?.scaleX ?? 1) / this.originalScale.scaleX
