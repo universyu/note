@@ -276,6 +276,7 @@
 
 ```ts
   public applyCropType(cropRatio: CropRatioEnum) {
+    this.resetScale()
     this.cropRatio = cropRatio
     this.canvas.setActiveObject(this._cropRect!)
     const maxWidth = this.canvas.getWidth() * VIEW_SCALE
@@ -373,7 +374,6 @@
         }
       }
     }
-    this.resetScale()
     this._cropRect?.set(optionsRect) // 框本身信息
     this._cropRect?.setControlsVisibility(controlsOptions) // 可操作点信息
     this.updateClipPath()
