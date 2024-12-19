@@ -189,7 +189,7 @@ const { generateSD } = useSDStore()
 
 当同一个state里面的变量改变的时候，会导致其他变量所影响的UI也被重新计算，经过React虚拟DOM的比较，发现没有变化的不会重新渲染。
 
-为了直接避免重新计算UI，可以将需要state变量单独返回
+为了直接避免重新计算UI，可以将需要state变量单独返回，避免订阅整个 `store`
 
 ```tsx
 const { theme } = useGlobalStore( state => state.theme )

@@ -81,11 +81,11 @@ const BaseVideo = styled('video')({
 
 #### absolute
 
-包围盒是向上第一个非`static`的标签
+包围盒是向上第一个非`static`的标签，如果有`transform`会以之为包围盒
 
 #### fixed
 
-包围盒是视窗
+包围盒是视窗，如果有`transform`会以之为包围盒
 
 #### left、right....
 
