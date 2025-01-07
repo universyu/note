@@ -74,3 +74,8 @@
 
 state变量改变，以及zustand变量改变的时候则会触发整个组件的所有代码重新执行，但是也不会导致挂载和卸载
 
+
+
+#### 无法触发 effect
+
+用一般的  `ref.current`  当做依赖项，是无法触发  `useEffect` 的，因为 `ref.current` 变化的时候根本不会触发 `react` 的重新比较机制，但是 `DOM` 的情况不一样， `react` 先渲染组件，完成 `ref` 的设置，然后才调用 `useEffect`，所以在一个依赖空数组的 `useEffect` 里面判断一个 `DOM` 的 `ref.current` 为 `true` 才执行某段函数是可行的
