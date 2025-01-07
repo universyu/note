@@ -1,6 +1,6 @@
 # WebWorker
 
-### 内容安全政策（CSP）
+## 内容安全政策（CSP）
 
 一般情况下，Worker不会继承主页面的CSP，可以在HTTP响应头中设置Worker的CSP
 
@@ -86,4 +86,14 @@ export class WorkerPool<TInput, TOutput> {
 }
 
 ```
+
+
+
+
+
+## 传递规则
+
+### 只可以传递可序列化数据
+
+带有函数，原型链继承或内部循环引用的无法序列化
 
