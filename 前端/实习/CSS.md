@@ -91,3 +91,10 @@ const BaseVideo = styled('video')({
 
 这些元素在`static`状态会被忽略
 
+
+
+
+
+### 设置比例
+
+由于  `padding`  写百分比时以父组件的 `width` 为参照，故可以用来设计固定比例的容器
