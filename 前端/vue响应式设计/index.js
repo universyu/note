@@ -10,7 +10,6 @@ const sum = computed(() => {
 });
 
 effect(() => {
-  state.a;
   console.log("render", sum.value);
 });
 state.a++;
