@@ -184,8 +184,14 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "e0760217a1a20391",
+  "active": "da11b765d1ddeb74",
   "lastOpenFiles": [
+    "前端/图形学/线性代数.md",
+    "前端/图形学/投影.md",
+    "前端/图形学/光栅化.md",
+    "前端/图形学/反走样.md",
+    "前端/图形学/Gamma correction.md",
+    "前端/vue响应式设计/框架.md",
     "前端/vue响应式设计/package.json",
     "前端/vue响应式设计/utils.js",
     "前端/vue响应式设计/ref.js",
@@ -196,11 +202,6 @@
     "前端/vue响应式设计/operations.js",
     "前端/vue响应式设计/index.js",
     "前端/vue响应式设计/computed.js",
-    "前端/图形学/反走样.md",
-    "前端/vue响应式设计/框架.md",
-    "前端/图形学/光栅化.md",
-    "前端/图形学/投影.md",
-    "前端/图形学/线性代数.md",
     "前端/glsl/线性代数.md",
     "前端/glsl/电磁动画.md",
     "前端/glsl/矩阵.md",
