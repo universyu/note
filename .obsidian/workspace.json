@@ -6,6 +6,7 @@
       {
         "id": "e42577c6d996dc8f",
         "type": "tabs",
+        "dimension": 70.9731543624161,
         "children": [
           {
             "id": "da11b765d1ddeb74",
@@ -27,6 +28,7 @@
       {
         "id": "cfb42b775641e5e7",
         "type": "tabs",
+        "dimension": 29.026845637583893,
         "children": [
           {
             "id": "ed6e18a98fc6135e",
@@ -40,7 +42,7 @@
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "几何体 的大纲"
+              "title": "Outline of 几何体"
             },
             "group": "1e829f5860f8f36a"
           }
@@ -67,7 +69,7 @@
                 "autoReveal": false
               },
               "icon": "lucide-folder-closed",
-              "title": "文件列表"
+              "title": "Files"
             }
           },
           {
@@ -178,21 +180,23 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:打开快速切换": false,
-      "graph:查看关系图谱": false,
-      "canvas:新建白板": false,
-      "daily-notes:打开/创建今天的日记": false,
-      "templates:插入模板": false,
-      "command-palette:打开命令面板": false
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
     }
   },
   "active": "da11b765d1ddeb74",
   "lastOpenFiles": [
+    "前端/图形学/着色.md",
+    "前端/图形学/反走样.md",
+    "前端/图形学/光栅化.md",
+    "前端/图形学/几何体.md",
     "前端/图形学/投影.md",
     "前端/图形学/线性代数.md",
-    "前端/图形学/着色.md",
-    "前端/图形学/几何体.md",
-    "前端/图形学/光栅化.md",
+    "前端/图形学/Gamma correction.md",
     "前端/实习/前端笔记：代码优化杂记.md",
     "前端/js/正则表达式.md",
     "前端/js",
@@ -211,8 +215,6 @@
     "前端/js/image/屏幕截图 2024-05-13 154659.png",
     "前端/js/image/屏幕截图 2024-05-13 153025.png",
     "前端/js/image/屏幕截图 2024-05-11 162343.png",
-    "前端/图形学/反走样.md",
-    "前端/图形学/Gamma correction.md",
     "前端/vue响应式设计/框架.md",
     "前端/vue响应式设计/package.json",
     "前端/vue响应式设计/utils.js",
