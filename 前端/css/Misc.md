@@ -13,3 +13,8 @@
 ### flex: 1 
 
 只在 `display:flex` 父组件的主轴上填充， `img` 行为特殊，一般用一个包容器来做 `flex:1` ， 然后 `img` 设置 `absolute` 并填满容器（ `width:100%,height:100%,top:0,left:0` ）
+
+
+### display none
+
+设置 `display:none` 会直接导致 dom 计算有问题，如果涉及 canvas 做渲染的话，会因为尺寸问题导致渲染出错，替代方案是 `visibility:hidden`
