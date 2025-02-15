@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "前端/图形学/辐射度量学.md",
+                "file": "前端/css/Misc.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "辐射度量学"
+              "title": "Misc"
             },
             "group": "1e829f5860f8f36a"
           }
@@ -36,13 +36,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "前端/图形学/辐射度量学.md",
+                "file": "前端/css/Misc.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "辐射度量学 的大纲"
+              "title": "Misc 的大纲"
             },
             "group": "1e829f5860f8f36a"
           }
@@ -188,16 +188,18 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "da11b765d1ddeb74",
+  "active": "ed6e18a98fc6135e",
   "lastOpenFiles": [
+    "note",
+    "新建文件夹",
     "前端/图形学/光栅化.md",
-    "前端/图形学/辐射度量学.md",
     "前端/图形学/光线追踪.md",
+    "前端/图形学/辐射度量学.md",
+    "前端/图形学/反走样.md",
+    "前端/图形学/材质.md",
     "前端/图形学/几何体.md",
     "前端/图形学/着色.md",
     "前端/图形学/线性代数.md",
-    "前端/图形学/材质.md",
-    "前端/图形学/反走样.md",
     "前端/图形学/投影.md",
     "前端/图形学/路径追踪.md",
     "前端/图形学/Gamma correction.md",
@@ -216,7 +218,6 @@
     "前端/js/异步编程.md",
     "前端/js/Class.md",
     "前端/js/Object进阶.md",
-    "前端/js/UI事件.md",
     "前端/js/image/屏幕截图 2024-05-15 190614.png",
     "前端/js/image/屏幕截图 2024-05-14 201101.png",
     "前端/js/image/屏幕截图 2024-05-14 191359.png",
@@ -230,7 +231,6 @@
     "前端/vue响应式设计/effect.js",
     "前端/vue响应式设计/handlers 1.js",
     "前端/vue响应式设计/handlers.js",
-    "前端/vue响应式设计/operations.js",
-    "前端/vue响应式设计/index.js"
+    "前端/vue响应式设计/operations.js"
   ]
 }
