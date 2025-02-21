@@ -186,7 +186,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -201,16 +202,17 @@
   },
   "active": "da11b765d1ddeb74",
   "lastOpenFiles": [
-    "前端/图形学/材质.md",
+    "前端/图形学/光与色彩.md",
+    "前端/图形学/光栅化.md",
     "前端/图形学/光线追踪.md",
+    "前端/图形学/辐射度量学.md",
+    "前端/图形学/反走样.md",
+    "前端/图形学/材质.md",
     "latex-suite-snippet-variables.js",
     "latex-suite-snippets.js",
     "前端/css/Misc.md",
     "note",
     "新建文件夹",
-    "前端/图形学/光栅化.md",
-    "前端/图形学/辐射度量学.md",
-    "前端/图形学/反走样.md",
     "前端/图形学/几何体.md",
     "前端/图形学/着色.md",
     "前端/图形学/线性代数.md",
