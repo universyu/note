@@ -78,6 +78,21 @@ NDC 转 屏幕，就是从标准立方体转[0,width-1] * [0,height-1]
 ```cpp
 Vec3f world2screen(Vec3f v) {
   return Vec3f(int((v.x + 1.) * width / 2. + .5),
-               int((v.y + 1.) * height / 2. + .5), v.z);
+               int((v.y + 1.) * height / 2. + .5), v.z);//未考虑深度
+}
+```
+
+下面的矩阵考虑了深度，将 $[-1,1]^3$ 转到以 (x,y)为左下角起点，[0,width] * [0,height] 的屏幕，屏幕深度从 0 到 depth 
+```cpp
+Matrix viewport(int x, int y, int w, int h) {
+    Matrix m = Matrix::identity(4);
+    m[0][3] = x+w/2.f;
+    m[1][3] = y+h/2.f;
+    m[2][3] = depth/2.f;
+
+    m[0][0] = w/2.f;
+    m[1][1] = h/2.f;
+    m[2][2] = depth/2.f;
+    return m;
 }
 ```
