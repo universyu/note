@@ -71,3 +71,13 @@ $$
 
 ## NDC
 投影空间转 NDC 就把各个齐次坐标前三项除以第四项
+
+## Screen Space
+NDC 转 屏幕，就是从标准立方体转[0,width-1] * [0,height-1]
+下面的程序将空间的点转到屏幕范围，然后加上 0.5 找到对应像素的中心点
+```cpp
+Vec3f world2screen(Vec3f v) {
+  return Vec3f(int((v.x + 1.) * width / 2. + .5),
+               int((v.y + 1.) * height / 2. + .5), v.z);
+}
+```
