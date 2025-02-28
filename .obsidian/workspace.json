@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "前端/图形学/线性代数.md",
+                "file": "前端/图形学/着色.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "线性代数"
+              "title": "着色"
             },
             "group": "1e829f5860f8f36a"
           }
@@ -36,13 +36,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "前端/图形学/线性代数.md",
+                "file": "前端/图形学/着色.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of 线性代数"
+              "title": "Outline of 着色"
             },
             "group": "1e829f5860f8f36a"
           }
@@ -201,6 +201,7 @@
   },
   "active": "da11b765d1ddeb74",
   "lastOpenFiles": [
+    "前端/图形学/线性代数.md",
     "前端/图形学/模拟.md",
     "前端/图形学/光线追踪.md",
     "前端/图形学/相机.md",
@@ -216,7 +217,6 @@
     "新建文件夹",
     "前端/图形学/几何体.md",
     "前端/图形学/着色.md",
-    "前端/图形学/线性代数.md",
     "前端/图形学/投影.md",
     "前端/图形学/路径追踪.md",
     "前端/图形学/Gamma correction.md",
