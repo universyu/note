@@ -14,12 +14,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "前端/测试/测试组件.md",
+                "file": "前端/windows裁剪/PerfProcessRenderer.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "测试组件"
+              "title": "PerfProcessRenderer"
             },
             "group": "1e829f5860f8f36a"
           }
@@ -36,13 +36,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "前端/测试/测试组件.md",
+                "file": "前端/windows裁剪/PerfProcessRenderer.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of 测试组件"
+              "title": "Outline of PerfProcessRenderer"
             },
             "group": "1e829f5860f8f36a"
           }
@@ -201,8 +201,11 @@
   },
   "active": "da11b765d1ddeb74",
   "lastOpenFiles": [
-    "前端/测试/带测试的开源库.md",
+    "前端/开源TransformControls/README.md",
+    "前端/windows裁剪/PerfProcessRenderer.md",
     "前端/测试/测试组件.md",
+    "前端/windows裁剪",
+    "前端/测试/带测试的开源库.md",
     "前端/测试/jest 模拟.md",
     "前端/测试/browser ts jest.md",
     "前端/测试/单元测试.md",
@@ -220,7 +223,6 @@
     "计算机系统/指令.one",
     "计算机系统/浮点数.one",
     "计算机系统/整数加法与非运算.one",
-    "计算机系统/原码、反码、补码、类型转换.one",
     "操作系统/实验课/屏幕截图 2024-04-25 152031.png",
     "操作系统/实验课/屏幕截图 2024-04-28 104228.png",
     "操作系统/实验课/Lios.md",
@@ -237,8 +239,6 @@
     "前端/计算机网络/报文.md",
     "前端/代码规范/注释.md",
     "前端/代码规范/函数.md",
-    "前端/代码规范/变量命名.md",
-    "前端/笔试/前端笔试.md",
     "前端/js/image/屏幕截图 2024-05-15 190614.png",
     "前端/js/image/屏幕截图 2024-05-14 201101.png",
     "前端/js/image/屏幕截图 2024-05-14 191359.png",
