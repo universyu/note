@@ -10,3 +10,16 @@
 ## 间接依赖符号链接
 
 间接依赖本身存储在全局依赖地址，但项目使用间接依赖时使用的是符号链接，相当于快捷方式
+
+## 构建 monorepo 项目
+
+初始化项目
+```bash
+pnpm init
+touch pnpm-workspace.yaml
+```
+安装包到工作空间，会被添加到全局根目录的 package 中
+```bash
+pnpm add ... -D --workspace-root
+```
+
