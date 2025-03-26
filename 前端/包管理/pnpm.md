@@ -18,7 +18,7 @@
 pnpm init
 touch pnpm-workspace.yaml
 ```
-安装包到工作空间，会被添加到全局根目录的 package 中
+安装包到工作空间，会被添加到全局根目录的 package ，所以子目录都可以调用到这些包
 ```bash
 pnpm add ... -D --workspace-root
 ```
