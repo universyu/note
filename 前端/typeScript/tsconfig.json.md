@@ -16,4 +16,22 @@
 
 值为 true 表示编译后的文件生成类型说明文件
 
+### esModuleInterop
+
+commonjs 模块的导出没有默认导出（export default）
+如果希望用默认导入的方式导入 commonjs 模块，就需要让 esModuleInterop 为 true
+
+
+### 路径别名
+
+开发时可以把路径 @ 换成根目录的 src
+
+```json
+        "baseUrl": "./",
+        "paths": {
+            "@/*":["src/*"]
+        }
+```
+
+
 
