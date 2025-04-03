@@ -325,3 +325,47 @@ switch e.transform.corner 考虑四个角即可，四个辅助函数分别考虑
               }
 ```
 
+
+#### crop and img 居中
+
+##### crop 居中
+
+直接把中心点拉到 canvas 中心就可以了
+
+```ts
+      const offsetX = cropRect.left! - canvasCenterX
+      const offsetY = cropRect.top! - canvasCenterY
+      cropRect.set({
+        left: canvasCenterX,
+        top: canvasCenterY,
+      })
+```
+
+##### img 居中
+
+和 crop 保持相对静止
+
+```ts
+        this._image.set({
+          left: this._image.left! - offsetX,
+          top: this._image.top! - offsetY,
+        })
+```
+
+##### back_img 居中
+
+背面照片只在 crop 非等比缩放时被影响，首先它应用和 crop 一样的位移，如果 crop 左边拉到了照片外面，就尝试把照片左移，如果照片宽度不够就缩放照片宽度至和 crop 等宽并让两者中心对齐
+
+
+#### crop 和 img 缩放
+
+为了让 crop 尽量占满屏幕并在不同的宽高比下尺寸有所差异，以 cropRatio 和 canvasRatio 的相对大小为分支条件，让 crop 的相对长边和 canvas 对应边等长然后再乘以一定系数制造差异。
+
+##### 系数计算
+
+以 crop 原始 ratio 和 canvasRatio 的相对大小为分支条件， crop 初始化时就已经让相对长边占满了 canvas 的对应边。 假设起始相对长边是宽，当下相对长边还是宽，那么 canvasRatio 到 originalRatio 之间让系数从 0.9 到 1.0。起始宽长现在高长，那么会求高相对于 canvas 高的系数，这时假设 originalRatio 对于 canvasRatio 的对称点为比例为 1 的点，还需要考虑程序健壮性：
+```ts
+      const distance = cropOriRatio - canvasRatio
+      const endPoint = Math.max(0.1, canvasRatio - distance)
+```
+起始相对长边是高时，数据取倒数就可以了
