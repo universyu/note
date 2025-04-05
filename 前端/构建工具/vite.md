@@ -63,3 +63,27 @@ import { loadEnv } from 'vite'
 
 需要安装 @types/node 而且需要 import path from 'path'
 
+
+
+## hmr
+
+在 d.ts 中写
+
+```ts
+/// <reference types="vite/client"/>
+```
+
+就可以在模块中使用 import.meta.hot 
+
+假设模块中导出了一个函数 render 
+那么在 render 中写 
+
+```ts
+if(import.meta.hot){
+	import.meta.hot.accept((newModule)=>{
+		newModule.render()
+	})
+}
+```
+
+就可以在这个模块更改的时候只执行这个模块的 module ，而不触发其它部分的重新渲染

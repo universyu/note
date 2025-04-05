@@ -35,3 +35,6 @@ commonjs 模块的导出没有默认导出（export default）
 
 
 
+### moduleResolution
+
+默认是 Classic ，前端构建一般用 Bundler ，使用 Bundler 还可以在 import 时忽略文件后缀名
