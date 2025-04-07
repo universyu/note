@@ -5,7 +5,7 @@
 
 #### crop 
 
-存储上一次有效的 scaleX、scaleY、centerX、centerY，存储初始化时的 ratio 
+cacheCropValue 存储上一次的 width、height、centerX、centerY，originalRatio 存储初始化时的 ratio，fabric 的 Rect 自动存储最开始设置的 width 和 height 
 
 #### frontImg
 
@@ -81,15 +81,53 @@ zoom += delta
 ```ts
 clonedImage.scaleX = originScaleX * zoom
 ```
-可以求得缩放原则中缩放中心的 factor =  1 + originScaleX / this._image.scaleX 
+可以求得缩放原则中缩放中心的 factor =  1 + delta / zoom
 设 x 为 crop 中心减去 img 中心，则 
 ```ts
-delta /= (this._image?.scaleX ?? 1) / originScaleX
-clonedImage.left -= x * delta
+let deltaDiff = delta / zoom
+clonedImage.left -= x * deltaDiff
 ```
 
-或者理解为： delta 用来累加在 zoom 上， delta 相对于 zoom 的大小就是累加前后的差距大小，差距大小应用在原始距离上即可得差距距离
+或者理解为： delta 用来累加在 zoom 上， delta 相对于 zoom 的大小就是累加前后的差距大小，所以 deltaDiff = ( zoom + delta - zoom ) / zoom
 
+##### 以crop中心为中心二次缩放
+
+经过第一次缩放照片可能宽度或者高度不够，第二次缩放让宽高不小于 crop 尺寸，而且必须是等比缩放不改变照片 ratio
+
+```ts
+        if (delta < 0) {
+          if (
+            clonedBoundingRect.width - cropBoundingRect.width < 0 &&
+            clonedBoundingRect.height - cropBoundingRect.height < 0
+          ) {
+            // 两边都超出就让相对长边拉满，让两边都不超出
+            scaleFactor = isImgWider
+              ? cropBoundingRect.height / clonedBoundingRect.height
+              : cropBoundingRect.width / clonedBoundingRect.width
+          } else if (
+            clonedBoundingRect.width - cropBoundingRect.width < 0 &&
+            clonedBoundingRect.height - cropBoundingRect.height >= 0
+          ) {
+            scaleFactor = cropBoundingRect.width / clonedBoundingRect.width
+          } else if (
+            clonedBoundingRect.width - cropBoundingRect.width >= 0 &&
+            clonedBoundingRect.height - cropBoundingRect.height < 0
+          ) {
+            scaleFactor = cropBoundingRect.height / clonedBoundingRect.height
+          }
+          // 中心二次缩放
+          clonedBoundingRect.left -=
+            (cropBoundingRect.centerX - clonedBoundingRect.left) * (scaleFactor - 1)
+          clonedBoundingRect.top -=
+            (cropBoundingRect.centerY - clonedBoundingRect.top) * (scaleFactor - 1)
+          clonedBoundingRect.width *= scaleFactor
+          clonedBoundingRect.height *= scaleFactor
+          zoom *= scaleFactor
+          deltaDiff = deltaDiff * scaleFactor + scaleFactor - 1
+```
+
+这最终的 deltaDiff 计算是 zoom -> zoom + delta -> ( zoom + delta ) * scaleFactor 
+deltaDiff = ( ( zoom + delta ) * scaleFactor  - zoom ) / zoom  
 ##### 位置矫正
 
 对于 x、y 轴，如果缩放时超出 crop 边界，那么分别另坐标减去 offsetX、offsetY 矫正位置，只有滚轮缩小照片时可能超出边界。

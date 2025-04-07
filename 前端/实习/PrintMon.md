@@ -933,18 +933,6 @@ canvas所在组件里面，用减法确保下面的文字有高度
 
 
 
-### 解决padding导致的位移
-
-`boxSizing: border-box`
-
-
-
-### getter
-
-在类中写的带有`get`的函数调用的时候可以像一个属性一样，不需要用括号数
-
-
-
 ### every
 
 数组的`.every`可以校验数组中的元素是否全都符合条件，返回boolean
@@ -965,19 +953,6 @@ canvas所在组件里面，用减法确保下面的文字有高度
 
 子组件的参数中接收`React.MutableRefObject<...>`则这个Ref是可以被修改的
 
-
-
-### 共用组件
-
-为了让部分内容是可选显示的，可以设置可选参数，让参数默认为true就可以了
-
-```ts
-interface Props {
-  style?: React.CSSProperties
-  showDownload?: boolean
-}
-export const TopBar: React.FC<Props> = ({ style, showDownload = true }) => {
-```
 
 
 
@@ -1038,33 +1013,5 @@ export const IOSSwitch = styled(Switch)({
     link.download = 'users.json'
     link.click()
     URL.revokeObjectURL(url)
-```
-
-
-
-### Promise.all
-
-（只有textureDiffuse需要使用SRGB）
-
-```
-         const textureLoader = new THREE.TextureLoader()
-          const loadTexture = (url: string, useSRGB = true) => {
-            return new Promise<THREE.Texture>((resolve) => {
-              textureLoader.load(url, (texture) => {
-                texture.colorSpace = useSRGB ? THREE.SRGBColorSpace : THREE.LinearSRGBColorSpace
-                resolve(texture)
-              })
-            })
-          }
-
-          const texturePromises = [
-            textureUrl ? loadTexture(textureUrl, true) : Promise.resolve(undefined),
-            metallicImageUrl ? loadTexture(metallicImageUrl, false) : Promise.resolve(undefined),
-            roughnessImageUrl ? loadTexture(roughnessImageUrl, false) : Promise.resolve(undefined),
-          ]
-
-          Promise.all(texturePromises).then(([diffuseMap, metallicMap, roughnessMap]) => {
-            constructModel(diffuseMap, metallicMap, roughnessMap)
-          })
 ```
 

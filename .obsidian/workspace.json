@@ -13,13 +13,36 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "前端/OpenGL/语言特性.md",
+                "file": "前端/实习/代码优化杂记.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "语言特性"
-            }
+              "title": "代码优化杂记"
+            },
+            "group": "d29390bb0ebc5568"
+          }
+        ]
+      },
+      {
+        "id": "cf97986f6cbba652",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2f70b96b58b66295",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "前端/实习/代码优化杂记.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of 代码优化杂记"
+            },
+            "group": "d29390bb0ebc5568"
           }
         ]
       }
@@ -176,11 +199,14 @@
   },
   "active": "37cc9c0ecd7b31ee",
   "lastOpenFiles": [
+    "前端/实习/上下文丢失.md",
+    "前端/实习/全局上下文.md",
+    "前端/实习/PrintMon.md",
+    "前端/windows裁剪/PerfProcessRenderer.md",
     "前端/OpenGL/语言特性.md",
     "前端/OpenGL/shader",
     "前端/OpenGL",
     "前端/css/Misc.md",
-    "前端/windows裁剪/PerfProcessRenderer.md",
     "前端/实习/大小自适应.md",
     "前端/测试/测试组件.md",
     "前端/测试/单元测试.md",
@@ -211,9 +237,6 @@
     "操作系统/实验课/屏幕截图 2024-04-25 152031.png",
     "操作系统/实验课/屏幕截图 2024-04-28 104228.png",
     "操作系统/实验课/Lios.md",
-    "操作系统/CPU管理.md",
-    "前端/计算机网络/TCP.md",
-    "前端/计算机网络/SMTP.md",
     "前端/js/image/屏幕截图 2024-05-15 190614.png",
     "前端/js/image/屏幕截图 2024-05-14 201101.png",
     "前端/js/image/屏幕截图 2024-05-14 191359.png",
