@@ -1,4 +1,8 @@
 
+## 最终效果
+
+裁剪框永远被底片包含，底片位置可以移动，也可以滚轮缩放。裁剪框宽高比可以修改，修改后需要做居中并缩放，让裁剪框永远在 canvas 正中间，且其大小合适。
+
 ## 设计方案
 
 ###  存储数据
@@ -66,9 +70,10 @@ fabric 有些操作无法 prevent，这里为了统一逻辑，采取先拖拽�
 
 同理矫正 y 轴
 
-#### 滚轮缩放
+#### 滚轮缩放（handleZoom）
 
-先克隆照片，尝试缩放，若操作非法，则不操作实际照片
+先克隆照片，尝试缩放，若操作非法，则不操作实际照片。
+最后的效果是照片永远等比缩放，裁剪框永远在照片内，照片缩小时会自动偏移到一条边占满裁剪框对应边时停止。
 
 ##### 以 crop 中心为中心缩放照片
 
@@ -130,239 +135,126 @@ clonedImage.left -= x * deltaDiff
 deltaDiff = ( ( zoom + delta ) * scaleFactor  - zoom ) / zoom  
 ##### 位置矫正
 
-对于 x、y 轴，如果缩放时超出 crop 边界，那么分别另坐标减去 offsetX、offsetY 矫正位置，只有滚轮缩小照片时可能超出边界。
-
-对于 x 轴，if 左边越界，需要移动照片令其左边贴合 crop 左边，在 img width 小于 crop width 时，当下滚轮操作非法，直接返回，不修改原 img 的 scale、position，否则
+哪边超出就让那边贴边界
 ```ts
- offsetX =  clonedImageLeft - cropLeft   
+          if (clonedBoundingRect.left - cropLeft > 0) {
+            offSetX = clonedBoundingRect.left - cropLeft
+          } else if (
+            clonedBoundingRect.left + clonedBoundingRect.width <
+            cropLeft + cropBoundingRect.width
+          ) {
+            offSetX =
+              clonedBoundingRect.left + clonedBoundingRect.width - cropLeft - cropBoundingRect.width
+          }
+          if (clonedBoundingRect.top - cropTop > 0) {
+            offSetY = clonedBoundingRect.top - cropTop
+          } else if (
+            clonedBoundingRect.top + clonedBoundingRect.height <
+            cropTop + cropBoundingRect.height
+          ) {
+            offSetY =
+              clonedBoundingRect.top + clonedBoundingRect.height - cropTop - cropBoundingRect.height
+          }
 ```
-else if 右边越界：如果 img 宽小于 crop 那么当下滚轮操作非法，否则
+
+##### 整合
+
+应用缩放，并位移确保是以 canvas 中心为缩放中心，然后再应用 offset 防止超边界
 ```ts
-offsetX = clonedImgRight - cropRight
+        this._image.scaleX = originScaleX * zoom
+        this._image.scaleY = originScaleY * zoom
+        const xDiff = x * deltaDiff
+        const yDiff = y * deltaDiff
+        if (this._image.left) {
+          this._image.left -= offSetX + xDiff
+        }
+        if (this._image.top) {
+          this._image.top -= offSetY + yDiff
+        }
+        this._image.setCoords()
 ```
 
-对于 y 轴，同 x 轴计算即可。
-
-最后，把变换应用到实际照片上
-
-```ts
-this._image.scaleX = originScaleX * zoom
-this._image.left -= x * delta + offSetX // 这里的 delta 已经除了 (this._image?.scaleX ?? 1) / originScaleX
-```
-
-
-#### 缩放 crop 
-
-实时缓存 crop 的合法配置，并在非法时应用上一个合法配置。fabric 原生监听以一定的频率触发，如果拖拽控制点速度过快，有的中间过程无法记录，确保非法操作的最近一个合法配置是贴合 img 的，需要设置一定的错误阈度。准许在阈度内的拖拽记为合法配置，并在下一个非法操作时应用此配置。
+#### 拖拽缩放裁剪框（cropScaling）
 
 ##### 方框
 
-对于 x 轴，if 左边超出 img ，就用上一个合法配置来更新当下的配置，让上一个配置的 width 拉至左边贴合 img 左边，即其宽度加上其 left 到 imgLeft 的距离，注意： cache 存的 left 是左边界，而 crop 设的 left 是中心
+确保 crop 的大小不能超出 img ， 水平方向如果左边超出就从 crop 右边到 img 左边的距离和 img 的宽度中选一个小的当做 crop 新宽度，如果左边没错右边错那么新宽度比如是 crop 左边到 img 右边。竖直方向同理。
+
 ```ts
-            if (cropBoundingRect.left - imgBoundingRect.left <= -errorThreshold) {
-
-              const newWidth =
-
-                this.cacheCropValue.left -
-
-                imgBoundingRect.left +
-
-                this.cacheCropValue.scaleX * originalWidth
-
+            if (cropLeft - imgBoundingRect.left < 0) {
+              const newWidth = Math.min(cropRight - imgBoundingRect.left, imgBoundingRect.width)
               const newScaleX = newWidth / originalWidth
-
-              const newLeft = imgBoundingRect.left + newWidth / 2
-
+              const newCenterX = imgBoundingRect.left + newWidth / 2
               cropRect.set({
-
-                left: newLeft,
-
+                left: newCenterX,
                 scaleX: newScaleX,
-
               })
-
-            }
-```
-
-else if 右边超出 img ，新宽度设置为 imgRight - 上一个合法配置的 left 
-```ts
-else if (cropRight - imgRight >= errorThreshold) {
-
-              const newWidth = imgRight - this.cacheCropValue.left
-
+            } else if (cropRight - imgRight > 0) {
+              const newWidth = imgRight - cropLeft
               const newScaleX = newWidth / originalWidth
-
-              const newLeft = this.cacheCropValue.left + newWidth / 2
-
+              const newCenterX = cropLeft + newWidth / 2
               cropRect.set({
-
-                left: newLeft,
-
+                left: newCenterX,
                 scaleX: newScaleX,
-
               })
-
+            }
+            if (cropTop - imgBoundingRect.top <= 0) {
+              const newHeight = Math.min(cropBottom - imgBoundingRect.top, imgBoundingRect.height)
+              const newScaleY = newHeight / originalHeight
+              const newCenterY = imgBoundingRect.top + newHeight / 2
+              cropRect.set({
+                top: newCenterY,
+                scaleY: newScaleY,
+              })
+            } else if (cropBottom - imgBottom > 0) {
+              const newHeight = imgBottom - cropTop
+              const newScaleY = newHeight / originalHeight
+              const newCenterY = cropTop + newHeight / 2
+              cropRect.set({
+                top: newCenterY,
+                scaleY: newScaleY,
+              })
             }
 ```
-
-else 存储合法值
-
-```ts
-else {
-
-              this.cacheCropValue.left = cropBoundingRect.left
-
-              this.cacheCropValue.scaleX = cropRect.scaleX ?? 1
-
-            }
-```
-
-y 轴同 x 轴的算法
 
 ##### 圆框
 
-圆框只支持 1:1 的正圆，如果拖拽 tl 导致 l 超出边界，那么 t 要么不超边界，要么等比越界
+###### stroke width 
 
-switch e.transform.corner 考虑四个角即可，四个辅助函数分别考虑四条边越界时的 newScale 和 两个轴的 offset ，offset 都是矫正后坐标与矫正前坐标之差，下面以左边越界为例
+fabric 的对象 width 是起始内容尺寸，不包含 strokeWidth，但是 boundingbox 是包含 strokeWidth 的，stroke width 是盒子内一半盒子外一半。
 
+
+只允许正圆缩放，所以四个拖拽点对应可能的错误只有两个方向。
+以左边错误为例，由于正圆两个方向的尺寸一致，设置新宽度时需要考虑照片水平和竖直方向的最小尺寸
 ```ts
-            const cacheVaildConfig = () => {
-
-              this.cacheCropValue.left = cropBoundingRect.left ?? 1
-
-              this.cacheCropValue.top = cropBoundingRect.top ?? 1
-
-              this.cacheCropValue.scaleX = cropRect.scaleX ?? 1
-
-              this.cacheCropValue.scaleY = cropRect.scaleY ?? 1
-
-            }
-
             const getNewConfigByLeft = () => {
-
-              const newWidth =
-
-                this.cacheCropValue.left -
-
-                imgBoundingRect.left +
-
-                this.cacheCropValue.scaleX * originalWidth
-
+              const newWidth = Math.min(cropRight - imgBoundingRect.left, imgMinSize)
               const newScaleX = newWidth / originalWidth
-
-              const newLeft = imgBoundingRect.left + newWidth / 2
-
-              const offset = newLeft - curCenter.x
-
+              const newCenterX = imgBoundingRect.left + newWidth / 2
+              const offset = newCenterX - cropBoundingRect.centerX
               return {
-
                 offset,
-
                 newScale: newScaleX,
-
               }
-
-            } 
-
+            }
 ```
-
-以 tl 为例，if l 越界 else if t 越界 else cache ，这里 t 和 l 的值同时减小，所以 offset 都用来加
+假设拖拽左上角，如果上和左都错了，那么挑一个 offset 大的做对应的缩放和偏移。
 ```ts
-              case 'tl':
-
-              default: {
-
-                if (cropBoundingRect.left - imgBoundingRect.left <= -errorThreshold) {
-
-                  const { offset, newScale } = getNewConfigByLeft()
-
-                  cropRect.set({
-
-                    left: curCenter.x + offset,
-
-                    top: curCenter.y + offset,
-
-                    scaleX: newScale,
-
-                    scaleY: newScale,
-
-                  })
-
-                } else if (cropBoundingRect.top - imgBoundingRect.top <= -errorThreshold) {
-
-                  const { offset, newScale } = getNewConfigByTop()
-
-                  cropRect.set({
-
-                    left: curCenter.x + offset,
-
-                    top: curCenter.y + offset,
-
-                    scaleX: newScale,
-
-                    scaleY: newScale,
-
-                  })
-
+                if (leftCorrection && topCorrection) {
+                  correction =
+                    leftCorrection.offset > topCorrection.offset ? leftCorrection : topCorrection
                 } else {
-
-                  cacheVaildConfig()
-
+                  correction = leftCorrection || topCorrection
                 }
-
-                break
-
-              }
-```
-
-对于 tr ，由于 t 和 r 一个减少一个增加，故 offset 应用为异号
-
-```ts
-              case 'tr': {
-
-                if (cropRight - imgRight >= errorThreshold) {
-
-                  const { offset, newScale } = getNewConfigByRight()
-
+                if (correction) {
                   cropRect.set({
-
-                    left: curCenter.x + offset,
-
-                    top: curCenter.y - offset,
-
-                    scaleX: newScale,
-
-                    scaleY: newScale,
-
+                    left: cropBoundingRect.centerX + correction.offset,
+                    top: cropBoundingRect.centerY + correction.offset,
+                    scaleX: correction.newScale,
+                    scaleY: correction.newScale,
                   })
-
-                } else if (cropBoundingRect.top - imgBoundingRect.top <= -errorThreshold) {
-
-                  const { offset, newScale } = getNewConfigByTop()
-
-                  cropRect.set({
-
-                    left: curCenter.x - offset,
-
-                    top: curCenter.y + offset,
-
-                    scaleX: newScale,
-
-                    scaleY: newScale,
-
-                  })
-
-                } else {
-
-                  cacheVaildConfig()
-
                 }
-
-                break
-
-              }
 ```
-
 
 #### crop and img 居中
 
