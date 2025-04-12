@@ -1,5 +1,5 @@
 
-使用 proxy 用来创建代理对象
+使用 proxy 用来创建代理对象，对象中的任何一个属性都会被监听
 
 ```ts
 import { track, trigger } from "./effect";
@@ -48,6 +48,10 @@ export function reactive(target: object) {
         return true;
       }
       track(target, key);
+      if (isObject(result)) {
+      // 嵌套的对象也要返回一个代理对象
+	    return reactive(result);
+	  }
       const result = Reflect.get(target, key, receiver);
       return result;
     },
@@ -66,3 +70,8 @@ export function reactive(target: object) {
 
 }
 ```
+
+
+## 数组适配
+
+如果用数组，任何一个下标的元素被改了值都可以自动派发更新，但是如果更新属性值导致了数组长度的变化，这里 js 是做隐式变化无法监听，需要手动在监听属性值的更改时判断是否影响到 length，如果 length 隐式变小了，那么还需要循环执行 delete
