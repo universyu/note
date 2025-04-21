@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "前端/图形学/着色.md",
+                "file": "前端/OpenGL/shader/shader 管理器.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "着色"
+              "title": "shader 管理器"
             }
           }
         ]
@@ -176,6 +176,10 @@
   },
   "active": "c1d4689b422b8ede",
   "lastOpenFiles": [
+    "前端/OpenGL/语言特性.md",
+    "前端/OpenGL/shader/shader 管理器.md",
+    "前端/vue响应式设计/effect.md",
+    "前端/图形学/着色.md",
     "前端/图形学/相机.md",
     "前端/图形学/光栅化.md",
     "前端/OpenGL/实战/uniform.md",
@@ -183,7 +187,6 @@
     "前端/OpenGL/assets/trapezoid.png",
     "前端/OpenGL/assets/triangle.png",
     "前端/OpenGL/assets",
-    "前端/OpenGL/语言特性.md",
     "前端/OpenGL/实战",
     "前端/实习/代码优化杂记.md",
     "前端/实习/上下文丢失.md",
@@ -205,9 +208,6 @@
     "前端/图形学/线性代数.md",
     "前端/图形学/模拟.md",
     "前端/图形学/材质.md",
-    "前端/图形学/路径追踪.md",
-    "前端/图形学/投影（clip space）.md",
-    "前端/图形学/光线追踪.md",
     "前端/windows裁剪",
     "计算机组成原理/运算.one",
     "计算机组成原理/指令.one",
