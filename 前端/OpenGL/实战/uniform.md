@@ -11,3 +11,8 @@ uniform 变量可以从 cpu 把数据传递到 gpu ，已经激活 shaderProgram
 ```glsl
 uniform float userGreen;
 ```
+
+矩阵 uniform 传递： 对指定程序指定名字的变量传入一个矩阵
+```cpp
+glUniformMatrix4fv(glGetUniformLocation(programID, name.c_str()), 1, GL_FALSE, &matrix[0][0]);
+```
