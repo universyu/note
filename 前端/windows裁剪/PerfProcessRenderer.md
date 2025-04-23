@@ -176,7 +176,7 @@ deltaDiff = ( ( zoom + delta ) * scaleFactor  - zoom ) / zoom
 
 #### 拖拽缩放裁剪框（cropScaling）
 
-##### 方框
+##### 自由方框
 
 确保 crop 的大小不能超出 img ， 水平方向如果左边超出就从 crop 右边到 img 左边的距离和 img 的宽度中选一个小的当做 crop 新宽度，如果左边没错右边错那么新宽度比如是 crop 左边到 img 右边。竖直方向同理。
 
@@ -217,45 +217,15 @@ deltaDiff = ( ( zoom + delta ) * scaleFactor  - zoom ) / zoom
             }
 ```
 
-##### 圆框
+##### 等比缩放框
 
 ###### stroke width 
 
 fabric 的对象 width 是起始内容尺寸，不包含 strokeWidth，但是 boundingbox 是包含 strokeWidth 的，stroke width 是盒子内一半盒子外一半。
 
-
-只允许正圆缩放，所以四个拖拽点对应可能的错误只有两个方向。
-以左边错误为例，由于正圆两个方向的尺寸一致，设置新宽度时需要考虑照片水平和竖直方向的最小尺寸
 ```ts
-            const getNewConfigByLeft = () => {
-              const newWidth = Math.min(cropRight - imgBoundingRect.left, imgMinSize)
-              const newScaleX = newWidth / originalWidth
-              const newCenterX = imgBoundingRect.left + newWidth / 2
-              const offset = newCenterX - cropBoundingRect.centerX
-              return {
-                offset,
-                newScale: newScaleX,
-              }
-            }
+	
 ```
-假设拖拽左上角，如果上和左都错了，那么挑一个 offset 大的做对应的缩放和偏移。
-```ts
-                if (leftCorrection && topCorrection) {
-                  correction =
-                    leftCorrection.offset > topCorrection.offset ? leftCorrection : topCorrection
-                } else {
-                  correction = leftCorrection || topCorrection
-                }
-                if (correction) {
-                  cropRect.set({
-                    left: cropBoundingRect.centerX + correction.offset,
-                    top: cropBoundingRect.centerY + correction.offset,
-                    scaleX: correction.newScale,
-                    scaleY: correction.newScale,
-                  })
-                }
-```
-
 #### crop and img 居中
 
 ##### crop 居中
