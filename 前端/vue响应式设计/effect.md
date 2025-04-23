@@ -44,9 +44,14 @@ function effect(fn) {
 }
 ```
 
+
+## 控制非立即触发
+
+为 effect 多加一个 options ，里面放一个 lazy 控制函数是否要在传进 effect 的时候立即执行一次
+
 ## 调度器实现延时触发
 
-为 effect 多加一个 options ，里面放一个 schedular 做调度器，执行 effect 时如果有 options.schedular 就改为执行它
+为 effect 多加一个 options ，里面放一个 scheduler 做调度器，执行 effect 时如果有 options.scheduler 就改为执行它
 
 对于同一 state 的反复更新，形如：
 ```js
@@ -73,12 +78,12 @@ function flushJob() {
 }
 ```
 
-这里传给 options 的 schedular 为：
+这里传给 options 的 scheduler 为：
 ```js
 effect(() => {
   layer2.innerHTML = proxy.age;
 }, {
-  schedular: (effect) => {
+  scheduler: (effect) => {
     jobQueue.add(effect);
     flushJob()
   }
