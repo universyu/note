@@ -59,3 +59,8 @@ img 默认是内联元素，会在下面留下 4px 的空余空间，也就是 i
 ##  border-radius 计算方式
 
 画一个与两边相切的圆，其半径为指定的 border-radius ，圆弧之外的 border 丢弃
+
+
+## flex gap
+
+即便子级宽高写死不变，也会为了满足 gap 而缩小实际子级可视尺寸，需要显示标注 `flexShrink : 0`
