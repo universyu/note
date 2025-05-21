@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "前端/OpenGL/实战/obj 加载.md",
+                "file": "前端/css/Canvas 无缝迁移.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "obj 加载"
+              "title": "Canvas 无缝迁移"
             }
           }
         ]
@@ -176,13 +176,15 @@
   },
   "active": "1094a6da8965dc78",
   "lastOpenFiles": [
+    "前端/css/Misc.md",
+    "前端/css/Canvas 无缝迁移.md",
+    "前端/OpenGL/实战/obj 加载.md",
     "前端/OpenGL/实战/texture.md",
     "前端/OpenGL/实战/uniform.md",
     "前端/OpenGL/实战/材质 shader.md",
     "前端/OpenGL/mesh 与 material.md",
     "前端/OpenGL/实战/Mesh 类.md",
     "前端/OpenGL/欧拉角与四元数.md",
-    "前端/OpenGL/实战/obj 加载.md",
     "前端/OpenGL/实战/绘制三角形.md",
     "前端/OpenGL/实战/灯光.md",
     "前端/OpenGL/shader/shader 管理器.md",
@@ -195,13 +197,11 @@
     "git.md",
     "前端/OpenGL/实战/camera.md",
     "前端/css/尺寸自适应.md",
-    "前端/css/Canvas 无缝迁移.md",
     "前端/css/tailwindcss.md",
     "前端/css/CSS Modules.md",
     "前端/css/两种动画.md",
     "前端/图形学/线性代数.md",
     "前端/图形学/投影（clip space）.md",
-    "前端/图形学/辐射度量学.md",
     "前端/OpenGL/assets/triangle.png",
     "前端/OpenGL/assets/trapezoid.png",
     "Pasted image 20250430094659.png",
