@@ -88,3 +88,5 @@ commit使用尾插法
 ## 便捷指令
 
 `gco -b main origin/main`直接依赖远端的main分支开创本地main分支
+
+git config --global credential.helper store 存储账号密码
