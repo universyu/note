@@ -56,6 +56,10 @@ border实际上是梯形，可以压缩盒子内容为 0 宽高把梯形挤压�
 
 img 默认是内联元素，会在下面留下 4px 的空余空间，也就是 img 的父级标签的高度会比实际大 4px，除非让 display 为 block
 
+## canvas 内联问题
+
+canvas 也默认是内联，也要 display block
+
 ##  border-radius 计算方式
 
 画一个与两边相切的圆，其半径为指定的 border-radius ，圆弧之外的 border 丢弃
