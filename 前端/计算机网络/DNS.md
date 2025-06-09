@@ -6,9 +6,8 @@
 
 **示例：cse.nyu.edu想要gaia.cs.umass.edu的IP，而前者的本地DNS服务器为dns.nyu.edu，后者的权威DNS服务器为dns.umass.edu**
 
+![[note/前端/计算机网络/src/1.png]]
 
-
-![1](D:\note\前端\计算机网络\src\1.png)
 
 ### 缓存
 
