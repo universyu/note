@@ -25,7 +25,8 @@ commit使用尾插法
 
 撤回当下正在执行的merg：`git merge --abort`
 
-
+对于冲突全都接受当下文件：
+`git checkout --ours .`
 
 ## rebase
 
