@@ -1,11 +1,16 @@
+
+## animation 帧选择
+
+
+
 ## morph animation 
 
 通过调节 meshes 下 primitives 的 targets 对应的 weights 实现表情等细节动画
 
-
 ## buffers、bufferviews、accessors
 
 原始数据存在 bin 文件中，buffers 显示了总长度和 uri ， bufferViews 指定 buffer 中的一段，可以用不同的 bufferViews 表示 bin 中的不同对象。accessors 指定从 bufferviews 中取什么格式的数据以及取出数据的数量，调用时全都是写 accessors 的索引。
+
 
 示例 bin 的 json 版
 ```json
