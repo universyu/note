@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "前端/css/Misc.md",
+                "file": "机器学习/batch.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Misc"
+              "title": "batch"
             }
           }
         ]
@@ -176,10 +176,11 @@
   },
   "active": "1094a6da8965dc78",
   "lastOpenFiles": [
+    "前端/css/Misc.md",
+    "机器学习/batch.md",
     "前端/css/CSS Modules.md",
     "前端/css/Canvas 无缝迁移.md",
     "前端/css/尺寸自适应.md",
-    "前端/css/Misc.md",
     "前端/css/两种动画.md",
     "前端/css/tailwindcss.md",
     "前端/OpenGL/欧拉角与四元数.md",
@@ -201,7 +202,6 @@
     "前端/OpenGL/实战/texture.md",
     "前端/OpenGL/语言特性.md",
     "前端/OpenGL/实战/obj 加载.md",
-    "前端/OpenGL/两种相机风格.md",
     "前端/Threejs",
     "前端/OpenGL/assets/triangle.png",
     "前端/OpenGL/assets/trapezoid.png",
