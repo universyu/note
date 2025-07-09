@@ -68,3 +68,13 @@ canvas 也默认是内联，也要 display block
 ## flex gap
 
 即便子级宽高写死不变，也会为了满足 gap 而缩小实际子级可视尺寸，需要显示标注 `flexShrink : 0`
+
+
+## grid 1fr
+
+平均分配会受到 min-content 的影响，会优先满足 min-content 再把剩余空间做平均分配。针对文字不等长的问题可以设置 css 
+```css
+  textOverflow: 'ellipsis',
+  overflow: 'hidden',
+```
+展示省略号
