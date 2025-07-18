@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "机器学习/batch.md",
+                "file": "前端/实习/blender glb.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "batch"
+              "title": "blender glb"
             }
           }
         ]
@@ -176,8 +176,9 @@
   },
   "active": "1094a6da8965dc78",
   "lastOpenFiles": [
-    "前端/css/Misc.md",
     "机器学习/batch.md",
+    "前端/实习/blender glb.md",
+    "前端/css/Misc.md",
     "前端/css/CSS Modules.md",
     "前端/css/Canvas 无缝迁移.md",
     "前端/css/尺寸自适应.md",
@@ -201,7 +202,6 @@
     "c++_note/导入库.md",
     "前端/OpenGL/实战/texture.md",
     "前端/OpenGL/语言特性.md",
-    "前端/OpenGL/实战/obj 加载.md",
     "前端/Threejs",
     "前端/OpenGL/assets/triangle.png",
     "前端/OpenGL/assets/trapezoid.png",
