@@ -87,7 +87,7 @@ console.log(min < max); //false
 var company = {
     address: 'beijing'
 }
-var yideng = Object. //create(company);
+var yideng = Object.create(company) //create(company);
 delete yideng.address
 console.log(yideng.address); //beijing
 ```
