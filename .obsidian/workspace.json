@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "前端/实习/blender glb.md",
+                "file": "机器学习/Feature Normalization.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "blender glb"
+              "title": "Feature Normalization"
             }
           }
         ]
@@ -53,7 +53,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "uselayouteffect",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -152,8 +152,8 @@
             "state": {
               "type": "git-view",
               "state": {},
-              "icon": "lucide-file",
-              "title": "Plugin no longer active"
+              "icon": "lucide-ghost",
+              "title": "git-view"
             }
           }
         ],
@@ -166,6 +166,7 @@
   },
   "left-ribbon": {
     "hiddenItems": {
+      "bases:Create new base": false,
       "switcher:Open quick switcher": false,
       "graph:Open graph view": false,
       "canvas:Create new canvas": false,
@@ -176,7 +177,24 @@
   },
   "active": "1094a6da8965dc78",
   "lastOpenFiles": [
+    "机器学习/dynamic learning rate.md",
+    "机器学习/classification.md",
+    "前端/实习/PrintMon.md",
+    "机器学习/Feature Normalization.md",
     "机器学习/batch.md",
+    "机器学习/正则化.md",
+    "机器学习/模型训练问题与解决方案.md",
+    "机器学习/saddle point.md",
+    "机器学习/momentum.md",
+    "机器学习/gradient descend.md",
+    "机器学习/sigmoid.md",
+    "机器学习/exercises/train、dev、test流程.md",
+    "前端/实习/大小自适应.md",
+    "前端/实习/参数式多路由.md",
+    "前端/工具链/babel.md",
+    "前端/测试/带测试的开源库.md",
+    "前端/测试/测试组件.md",
+    "前端/typeScript/函数类型.md",
     "前端/实习/blender glb.md",
     "前端/css/Misc.md",
     "前端/css/CSS Modules.md",
@@ -185,23 +203,6 @@
     "前端/css/两种动画.md",
     "前端/css/tailwindcss.md",
     "前端/OpenGL/欧拉角与四元数.md",
-    "前端/Threejs/group 矩阵更新原则.md",
-    "前端/Threejs/camera lookat.md",
-    "前端/OpenGL/法向矩阵.md",
-    "前端/OpenGL/glb.md",
-    "前端/OpenGL/实战/深度测试、模块测试.md",
-    "前端/OpenGL/实战/framebuffer与postEffect.md",
-    "前端/OpenGL/实战/cubemap.md",
-    "前端/OpenGL/坐标系转换.md",
-    "前端/OpenGL/mesh 与 material.md",
-    "前端/OpenGL/实战/材质 shader.md",
-    "前端/OpenGL/实战/灯光.md",
-    "前端/OpenGL/实战/绘制三角形.md",
-    "前端/OpenGL/实战/坐标系统.md",
-    "前端/OpenGL/实战/blend、cull.md",
-    "c++_note/导入库.md",
-    "前端/OpenGL/实战/texture.md",
-    "前端/OpenGL/语言特性.md",
     "前端/Threejs",
     "前端/OpenGL/assets/triangle.png",
     "前端/OpenGL/assets/trapezoid.png",
