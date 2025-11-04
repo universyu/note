@@ -1,0 +1,1 @@
+MMR 为 document 与 query 的相关程度乘以 hyperparameter lambda，再减去 （ 1 - lambda ） 乘以 （ document 与 selected 最近距离 ），既考虑相关性又筛除冗余

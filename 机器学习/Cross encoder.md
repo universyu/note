@@ -1,0 +1,1 @@
+cross encoder 将 query 和 document 作为联合的整体输入， feature 由学习得到而不是提前人为定义的。

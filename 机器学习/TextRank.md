@@ -1,0 +1,1 @@
+把句子当作结点，向量 Cosine Similarity 当作连接线的权重，利用 pagerank 算法计算排名靠前的当作主题
